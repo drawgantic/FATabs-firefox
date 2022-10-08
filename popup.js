@@ -8,6 +8,8 @@ document.addEventListener("click", (e) => {
 		bg.downloadImages(25);
 	} else if (e.target.id === "img-download-50") {
 		bg.downloadImages(50);
+	} else if (e.target.id === "cancel-download") {
+		bg.cancelDownload();
 	}
 	e.preventDefault();
 });

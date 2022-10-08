@@ -1,3 +1,9 @@
+cancelled = false;
+
+function cancelDownload() {
+	cancelled = true;
+}
+
 function downloadImages(amount = 0) {
 	browser.tabs.query({ url: "*://*.furaffinity.net/view/*" })
 	.then(async tabs => {
@@ -6,6 +12,10 @@ function downloadImages(amount = 0) {
 		}
 		for (const tab of tabs.slice(0, amount)) {
 			await new Promise(r => setTimeout(r, 1500));
+			if (cancelled) {
+				cancelled = false;
+				break;
+			}
 			browser.tabs.executeScript(tab.id, {
 				code: "document.getElementsByClassName('download')[0].firstChild.href;"
 			}).then(img => {
