@@ -1,12 +1,19 @@
 html, body {
+	background: black;
+	color: white;
 	width: 350px;
 }
 
 a {
 	margin: 10px;
 	display: inline-block;
+	color: cyan;
 }
 
 .panel {
 	margin: 5px;
+}
+
+.panel-section-header {
+	border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }

@@ -11,7 +11,7 @@ function downloadImages(amount = 0) {
 			amount = tabs.length;
 		}
 		for (const tab of tabs.slice(0, amount)) {
-			await new Promise(r => setTimeout(r, 1500));
+			await new Promise(r => setTimeout(r, 1125));
 			if (cancelled) {
 				cancelled = false;
 				break;
