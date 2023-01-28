@@ -4,14 +4,27 @@ function cancelDownload(): void {
 	cancelled = true;
 }
 
-function downloadImages(amount: number = 0): void {
+function downloadImages(left: number = 0, right: number = 0): void {
 	browser.tabs.query({ url: "*://*.furaffinity.net/view/*" })
 	.then( async (tabs) => {
-		if (amount <= 0 || amount > tabs.length) {
-			amount = tabs.length;
+		let start = 0, end = tabs.length;
+		if (left) {
+			for (const tab of tabs) {
+				if (left <= tab.index) {
+					end = tabs.indexOf(tab);
+					break;
+				}
+			}
+		} else if (right) {
+			for (const tab of tabs) {
+				if (right < tab.index) {
+					start = tabs.indexOf(tab);
+					break;
+				}
+			}
 		}
 		cancelled = false;
-		for (const tab of tabs.slice(0, amount)) {
+		for (const tab of tabs.slice(start, end)) {
 			await new Promise(r => setTimeout(r, 1125));
 			if (cancelled) {
 				break;

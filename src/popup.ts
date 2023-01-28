@@ -1,5 +1,5 @@
 interface BackgroundPage extends Window {
-	downloadImages(amount?: number): void;
+	downloadImages(left?: number, right?: number): void;
 	cancelDownload(): void;
 }
 
@@ -7,16 +7,24 @@ let bg = <BackgroundPage>browser.extension.getBackgroundPage();
 document.addEventListener("click", (e) => {
 	if (e.target) {
 		let target = <HTMLElement>e.target;
-		if (target.id === "img-download-all") {
-			bg.downloadImages();
-		} else if (target.id === "img-download-10") {
-			bg.downloadImages(10);
-		} else if (target.id === "img-download-25") {
-			bg.downloadImages(25);
-		} else if (target.id === "img-download-50") {
-			bg.downloadImages(50);
-		} else if (target.id === "cancel-download") {
+		switch (target.id) {
+		case "img-download-left":
+			browser.tabs.query({ active: true, currentWindow: true })
+			.then( (active) => {
+				bg.downloadImages(active[0].index, 0);
+			});
+			break;
+		case "img-download-right":
+			browser.tabs.query({ active: true, currentWindow: true })
+			.then( (active) => {
+				bg.downloadImages(0, active[0].index);
+			});
+			break;
+		case "cancel-download":
 			bg.cancelDownload();
+			break;
+		default:
+			bg.downloadImages();
 		}
 		e.preventDefault();
 	}
