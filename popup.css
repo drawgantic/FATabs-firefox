@@ -17,3 +17,15 @@ a {
 .panel-section-header {
 	border-bottom: 1px solid rgba(255, 255, 255, 0.15);
 }
+
+.text-section-header {
+	width: 100%;
+}
+
+.ext-name {
+	float: left;
+}
+
+.ext-version {
+	float: right;
+}

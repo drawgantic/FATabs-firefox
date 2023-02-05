@@ -1,5 +1,12 @@
 // let browser = chrome;
 
+let manifest = browser.runtime.getManifest();
+let header = document.getElementsByClassName("ext-version");
+if (header.length > 0) {
+	let text = document.createTextNode(manifest.version);
+	header[0].appendChild(text);
+}
+
 document.addEventListener("click", (e) => {
 	if (e.target) {
 		let target = <HTMLElement>e.target;
