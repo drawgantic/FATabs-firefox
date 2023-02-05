@@ -1,10 +1,17 @@
+// let browser = chrome;
+
+let running = false;
 let cancelled: boolean;
 
 function cancelDownload(): void {
 	cancelled = true;
 }
 
-function downloadImages(left: number = 0, right: number = 0): void {
+function downloadImages(left = 0, right = 0): void {
+	if (running) {
+		return;
+	}
+	running = true;
 	browser.tabs.query({ url: "*://*.furaffinity.net/view/*" })
 	.then( async (tabs) => {
 		let start = 0, end = tabs.length;
@@ -32,7 +39,7 @@ function downloadImages(left: number = 0, right: number = 0): void {
 			if (tab.id === undefined) {
 				continue;
 			}
-			let id: number = tab.id;
+			let id = tab.id;
 			try {
 				browser.scripting.executeScript({ target: {tabId: id}, func: () => {
 					return (<HTMLAnchorElement>document
@@ -47,5 +54,20 @@ function downloadImages(left: number = 0, right: number = 0): void {
 				console.error(`failed to execute script: ${err}`);
 			}
 		}
+	}, (reason) => {
+		console.error(`Error: ${reason}`);
 	});
+	running = false;
 }
+
+browser.runtime.onMessage.addListener( function(request) {
+	if (request.cancel) {
+		cancelDownload();
+	} else if (request.left) {
+		downloadImages(request.left, 0);
+	} else if (request.right) {
+		downloadImages(0, request.right);
+	} else {
+		downloadImages();
+	}
+});

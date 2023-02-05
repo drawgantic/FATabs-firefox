@@ -1,9 +1,5 @@
-interface BackgroundPage extends Window {
-	downloadImages(left?: number, right?: number): void;
-	cancelDownload(): void;
-}
+// let browser = chrome;
 
-let bg = <BackgroundPage>browser.extension.getBackgroundPage();
 document.addEventListener("click", (e) => {
 	if (e.target) {
 		let target = <HTMLElement>e.target;
@@ -11,20 +7,20 @@ document.addEventListener("click", (e) => {
 		case "img-download-left":
 			browser.tabs.query({ active: true, currentWindow: true })
 			.then( (active) => {
-				bg.downloadImages(active[0].index, 0);
+				browser.runtime.sendMessage({left: active[0].index});
 			});
 			break;
 		case "img-download-right":
 			browser.tabs.query({ active: true, currentWindow: true })
 			.then( (active) => {
-				bg.downloadImages(0, active[0].index);
+				browser.runtime.sendMessage({right: active[0].index});
 			});
 			break;
 		case "cancel-download":
-			bg.cancelDownload();
+			browser.runtime.sendMessage({cancel: true});
 			break;
 		default:
-			bg.downloadImages();
+			browser.runtime.sendMessage({});
 		}
 		e.preventDefault();
 	}
