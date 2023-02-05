@@ -10,15 +10,20 @@ a {
 	color: cyan;
 }
 
-.panel {
+.fa {
 	margin: 5px;
 }
 
-.panel-section-header {
+.fa-header {
+	display: flex;
+	flex-direction: row;
 	border-bottom: 1px solid rgba(255, 255, 255, 0.15);
+	padding: 16px;
 }
 
-.text-section-header {
+.title {
+	font-size: 1.385em;
+	font-weight: lighter;
 	width: 100%;
 }
 

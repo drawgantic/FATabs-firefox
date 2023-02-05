@@ -1,5 +1,3 @@
-// let browser = chrome;
-
 let manifest = browser.runtime.getManifest();
 let header = document.getElementsByClassName("ext-version");
 if (header.length > 0) {

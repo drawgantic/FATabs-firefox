@@ -1,5 +1,3 @@
-// let browser = chrome;
-
 let running = false;
 let cancelled: boolean;
 
