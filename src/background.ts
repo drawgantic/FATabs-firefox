@@ -10,6 +10,7 @@ function downloadImages(left = 0, right = 0): void {
 		return;
 	}
 	running = true;
+
 	browser.tabs.query({ url: "*://*.furaffinity.net/view/*" })
 	.then( async (tabs) => {
 		let start = 0, end = tabs.length;
@@ -28,16 +29,23 @@ function downloadImages(left = 0, right = 0): void {
 				}
 			}
 		}
+
 		cancelled = false;
+		let id: number | undefined = undefined;
 		for (const tab of tabs.slice(start, end)) {
+			if (id !== undefined) {
+				browser.tabs.remove(id);
+			}
+
 			await new Promise(r => setTimeout(r, 1125));
+			id = tab.id;
+			if (id === undefined) {
+				continue;
+			}
 			if (cancelled) {
 				break;
 			}
-			if (tab.id === undefined) {
-				continue;
-			}
-			let id = tab.id;
+
 			try {
 				browser.scripting.executeScript({ target: {tabId: id}, func: () => {
 					return (<HTMLAnchorElement>document
@@ -45,15 +53,23 @@ function downloadImages(left = 0, right = 0): void {
 				}}).then( (img) => {
 					if (img.length > 0) {
 						browser.downloads.download({ url: img[0].result, saveAs: false });
-						browser.tabs.remove(id);
 					}
 				});
 			} catch (err) {
 				console.error(`failed to execute script: ${err}`);
 			}
 		}
-	}, (reason) => {
-		console.error(`Error: ${reason}`);
+
+		browser.tabs.query({ windowType: 'normal' })
+		.then( (all) => {
+			if (all.length > 1 && id !== undefined) {
+				browser.tabs.remove(id);
+			}
+		}, (err) => {
+			console.error(`Count Error: ${err}`);
+		});
+	}, (err) => {
+		console.error(`Walk Error: ${err}`);
 	});
 	running = false;
 }
