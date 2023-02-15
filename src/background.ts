@@ -37,7 +37,7 @@ function downloadImages(left = 0, right = 0): void {
 				browser.tabs.remove(id);
 			}
 
-			await new Promise(r => setTimeout(r, 1125));
+			await new Promise( (r) => setTimeout(r, 1125) );
 			id = tab.id;
 			if (id === undefined) {
 				continue;
@@ -83,5 +83,33 @@ browser.runtime.onMessage.addListener( function(request) {
 		downloadImages(0, request.right);
 	} else {
 		downloadImages();
+	}
+});
+
+
+function downloadImage(src: string, link: string | undefined) {
+	const end = src.indexOf('?');
+	let img = src.substring(0, end > 0 ? end : undefined);
+	let fname: string | undefined = undefined;
+
+	const twitter = link?.match(/.*?:\/\/twitter\.com\/([a-zA-Z0-9_]+)/);
+	if (twitter) {
+		fname = twitter[1] + '_' +
+			img.substring(img.lastIndexOf('/') + 1) + '.jpg';
+		img += '?format=jpg&name=orig';
+	}
+
+	browser.downloads.download({ url: img, filename: fname, saveAs: false });
+}
+
+browser.contextMenus.create({
+	id: 'fatabs.menu.download',
+	title: 'Download image',
+	contexts: ['image']
+});
+
+browser.contextMenus.onClicked.addListener( (info, tab) => {
+	if (info.menuItemId === 'fatabs.menu.download' && info.srcUrl) {
+		downloadImage(info.srcUrl, info.linkUrl);
 	}
 });
