@@ -91,12 +91,6 @@ function downloadImage(src: string, link: string | undefined) {
 	browser.downloads.download({ url: img, filename: fname, saveAs: false })
 }
 
-browser.contextMenus.create({
-	id: 'fatabs.menu.download',
-	title: 'Download image',
-	contexts: ['image']
-})
-
 browser.runtime.onMessage.addListener( (request) => {
 	if (request.cancel) {
 		cancelDownload()
@@ -109,6 +103,13 @@ browser.runtime.onMessage.addListener( (request) => {
 	} else {
 		downloadImages()
 	}
+})
+
+
+browser.contextMenus.create({
+	id: 'fatabs.menu.download',
+	title: 'Download image',
+	contexts: ['image']
 })
 
 browser.contextMenus.onClicked.addListener( (info, tab) => {

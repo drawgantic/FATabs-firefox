@@ -9,10 +9,14 @@
 	z-index: 2147483647;
 	background-size: 100% 100%;
 	background-repeat: no-repeat;
-	background-image: url("icons/download.png");
+	background-image: url("images/download.png");
 	opacity: 0.5;
 }
 
 #fatabs-button:hover {
 	opacity: 1;
+}
+
+#fatabs-button:active {
+	filter: hue-rotate(45deg);
 }
