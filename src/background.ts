@@ -74,19 +74,6 @@ function downloadImages(left = 0, right = 0): void {
 	running = false;
 }
 
-browser.runtime.onMessage.addListener( function(request) {
-	if (request.cancel) {
-		cancelDownload();
-	} else if (request.left) {
-		downloadImages(request.left, 0);
-	} else if (request.right) {
-		downloadImages(0, request.right);
-	} else {
-		downloadImages();
-	}
-});
-
-
 function downloadImage(src: string, link: string | undefined) {
 	const end = src.indexOf('?');
 	let img = src.substring(0, end > 0 ? end : undefined);
@@ -94,9 +81,11 @@ function downloadImage(src: string, link: string | undefined) {
 
 	const twitter = link?.match(/.*?:\/\/twitter\.com\/([a-zA-Z0-9_]+)/);
 	if (twitter) {
-		fname = twitter[1] + '_' +
-			img.substring(img.lastIndexOf('/') + 1) + '.jpg';
-		img += '?format=jpg&name=orig';
+		let ext = new URLSearchParams(src.substring(end)).get('format');
+		ext = ext ? ext : 'jpg';
+		fname = twitter[1].replace(/_/g, '-') + '_'
+		      + img.substring(img.lastIndexOf('/') + 1) + '.' + ext;
+		img += '?format=' + ext + '&name=orig';
 	}
 
 	browser.downloads.download({ url: img, filename: fname, saveAs: false });
@@ -106,6 +95,20 @@ browser.contextMenus.create({
 	id: 'fatabs.menu.download',
 	title: 'Download image',
 	contexts: ['image']
+});
+
+browser.runtime.onMessage.addListener( (request) => {
+	if (request.cancel) {
+		cancelDownload();
+	} else if (request.left) {
+		downloadImages(request.left, 0);
+	} else if (request.right) {
+		downloadImages(0, request.right);
+	} else if (request.src) {
+		downloadImage(request.src, request.link);
+	} else {
+		downloadImages();
+	}
 });
 
 browser.contextMenus.onClicked.addListener( (info, tab) => {

@@ -1,0 +1,18 @@
+#fatabs-button {
+	width: 60px;
+	height: 60px;
+	margin-bottom: -60px;
+	left: calc(50% - 30px);
+
+	cursor: pointer;
+	position: relative;
+	z-index: 2147483647;
+	background-size: 100% 100%;
+	background-repeat: no-repeat;
+	background-image: url("icons/download.png");
+	opacity: 0.5;
+}
+
+#fatabs-button:hover {
+	opacity: 1;
+}
