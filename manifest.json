@@ -27,7 +27,6 @@
 		"tabs",
 		"downloads",
 		"scripting",
-		"contextMenus",
 		"*://*.furaffinity.net/view/*"
 	]
 }
