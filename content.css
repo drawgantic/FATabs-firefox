@@ -1,4 +1,4 @@
-#fatabs-button {
+#fatabs {
 	width: 60px;
 	height: 60px;
 	margin-bottom: -60px;
@@ -13,10 +13,10 @@
 	opacity: 0.5;
 }
 
-#fatabs-button:hover {
+#fatabs:hover {
 	opacity: 1;
 }
 
-#fatabs-button:active {
+#fatabs:active {
 	filter: hue-rotate(45deg);
 }
