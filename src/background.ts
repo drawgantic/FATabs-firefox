@@ -80,7 +80,10 @@ function downloadImage(src: string, filename: string | undefined) {
 
 browser.runtime.onMessage.addListener( (request) => {
 	switch (request.type) {
-	case 'l':
+	case 'btn':
+		downloadImage(request.src, request.filename)
+		break
+	case 'left':
 		browser.tabs.query({ active: true, currentWindow: true })
 		.then( (tab) => {
 			if (tab[0].index > 0) {
@@ -88,14 +91,13 @@ browser.runtime.onMessage.addListener( (request) => {
 			}
 		})
 		break
-	case 'r':
+	case 'right':
 		browser.tabs.query({ active: true, currentWindow: true })
-		.then( (tab) => { downloadImages(tab[0].index) })
+		.then( (tab) => {
+			downloadImages(tab[0].index)
+		})
 		break
-	case 's':
-		downloadImage(request.src, request.filename)
-		break
-	case 'c':
+	case 'cancel':
 		cancelDownload()
 		break
 	default:
