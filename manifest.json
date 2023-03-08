@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "FATabs",
-	"version": "1.22",
+	"version": "1.23",
 	"description": "Batch-download images from open FurAffinity view tabs",
 	"homepage_url": "https://github.com/dragantic/fatabs-firefox",
 
@@ -18,12 +18,25 @@
 		"default_popup": "popup.html",
 		"default_icon": "images/icon-32.png"
 	},
-	"content_scripts": [{
-		"matches": ["<all_urls>"],
-		"exclude_matches": ["*://*.youtube.com/*"],
-		"js": ["js/content.js"],
-		"css": ["content.css"]
-	}],
+	"content_scripts": [
+		{
+			"matches": ["*://*.furaffinity.net/*"],
+			"exclude_matches": ["*://*.furaffinity.net/view/*"],
+			"js": ["js/content_fa.js"],
+			"css": ["content.css"]
+		},
+		{
+			"matches": ["*://derpibooru.org/*", "*://furbooru.org/*"],
+			"exclude_matches": ["*://derpibooru.org/images/*", "*://furbooru.org/images/*"],
+			"js": ["js/content_derp.js"],
+			"css": ["content.css"]
+		},
+		{
+			"matches": ["*://twitter.com/*"],
+			"js": ["js/content_twit.js"],
+			"css": ["content.css"]
+		}
+	],
 	"permissions": [
 		"tabs",
 		"downloads",
