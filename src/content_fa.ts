@@ -6,9 +6,8 @@
 	btn.id = 'fatabs'
 	btn.title = 'Download Image'
 	btn.addEventListener('click', (e) => {
-	let match = (a ? a.href : img.baseURI).match(/\/view\/\d+/)
-		if (match) {
-			fetch("https://www.furaffinity.net" + match[0])
+		if (a) {
+			fetch(a.href)
 			.then((response) => response.text())
 			.then((text) => {
 				const view = text.match(/src="(\/\/d.furaffinity.net\/.*?)"/)
