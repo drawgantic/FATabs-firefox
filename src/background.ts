@@ -74,14 +74,11 @@ function downloadImages(index: number | undefined = undefined) {
 	running = false
 }
 
-function downloadImage(src: string, filename: string | undefined) {
-	browser.downloads.download({ url: src, filename: filename, saveAs: false })
-}
-
 browser.runtime.onMessage.addListener( (request) => {
 	switch (request.type) {
 	case 'btn':
-		downloadImage(request.src, request.filename)
+		browser.downloads.download(
+			{ url: request.src, filename: request.filename, saveAs: false })
 		break
 	case 'left':
 		browser.tabs.query({ active: true, currentWindow: true })
