@@ -10,7 +10,7 @@
 			fetch(a.href)
 			.then((response) => response.text())
 			.then((text) => {
-				const view = text.match(/src="(\/\/d.furaffinity.net\/.*?)"/)
+				const view = text.match(/href="(\/\/d.furaffinity.net\/.*?)"/)
 				if (view) {
 					browser.runtime.sendMessage({ type: 'btn', src: `https:${view[1]}` })
 				}
