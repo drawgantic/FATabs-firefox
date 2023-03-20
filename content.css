@@ -1,3 +1,8 @@
+@keyframes fadein {
+	0%   {opacity: 0;}
+	100% {opacity: 0.5;}
+ }
+
 #fatabs {
 	width: 60px;
 	height: 60px;
@@ -11,6 +16,12 @@
 	background-repeat: no-repeat;
 	background-image: url("images/download.png");
 	opacity: 0.5;
+	transition: 0.1s;
+	animation: fadein 0.1s;
+}
+
+#fatabs.hide {
+	opacity: 0;
 }
 
 #fatabs:hover {
@@ -21,13 +32,15 @@
 	filter: hue-rotate(45deg);
 }
 
-img.fabui_thumbfav {
-	left: auto !important;
-	right: 0;
+a > img.fabui_thumbfav {
 	width: 32px !important;
 	height: 32px !important;
+	padding: 0 !important;
+	left: auto !important;
+	right: 0;
+	opacity: 0.5;
 }
 
-img.fabui_removesub {
+a > img.fabui_removesub {
 	visibility: hidden;
 }

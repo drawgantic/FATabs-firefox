@@ -26,10 +26,13 @@
 		if (t instanceof HTMLImageElement
 		 && (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
 			img = t
-			a = t.closest('a');
-			(a || img).before(btn)
+			let focus = t.closest('a')
+			if (a !== focus) {
+				((a = focus) || img).before(btn)
+			}
+			btn.className = ''
 		} else if (btn !== t && a !== t) {
-			btn.remove()
+			btn.className = 'hide'
 		}
 	})
 })()
