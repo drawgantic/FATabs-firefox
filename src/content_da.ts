@@ -34,16 +34,20 @@
 
 	document.addEventListener('mouseover', (e) => {
 		const t = e.target
-		if (t instanceof HTMLAnchorElement && t.nextElementSibling
-		 && t.nextElementSibling.firstChild) {
-			const sib = t.nextElementSibling.firstChild
-			if (sib instanceof HTMLImageElement
-			 && (sib.offsetWidth >= 190 || sib.offsetHeight >= 190)) {
+		if (t instanceof HTMLAnchorElement) {
+			const next = t.nextElementSibling
+			const prev = t.previousElementSibling
+			const neph         = (next && next.firstChild instanceof HTMLImageElement ?
+				next.firstChild : (prev && prev.firstChild instanceof HTMLImageElement ?
+				prev.firstChild : null))
+			if (neph && (neph.offsetWidth >= 190 || neph.offsetHeight >= 190)) {
 				btn.className = ''
-				if (img !== sib) {
+				if (img !== neph) {
 					(a = t).prepend(btn)
-					img = sib
+					img = neph
 				}
+			} else {
+				btn.className = 'hide'
 			}
 		} else if (t instanceof HTMLImageElement
 		 && (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
