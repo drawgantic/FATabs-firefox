@@ -38,21 +38,21 @@
 		const sib = (<Element>t).nextElementSibling?.firstElementChild
 		if (sib instanceof HTMLImageElement
 		 && (sib.offsetWidth >= 190 || sib.offsetHeight >= 190)) {
-			img = sib
-			let focus = <HTMLAnchorElement>t
-			if (a !== focus) {
-				((a = focus) || img).before(btn)
+			if (img !== sib) {
+				img = sib
+				a = <HTMLAnchorElement>t;
+				(a || img).before(btn)
 			}
 			btn.className = ''
 		} else if (t instanceof HTMLImageElement
 		 && (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
-			img = t
-			let focus = t.closest('a')
-			if (a !== focus) {
-				((a = focus) || img).before(btn)
+			if (img !== t) {
+				img = t
+				a = img.closest('a');
+				(a || img).before(btn)
 			}
 			btn.className = ''
-		} else if (btn !== t && a !== t) {
+		} else if (btn !== t) {
 			btn.className = 'hide'
 		}
 	})

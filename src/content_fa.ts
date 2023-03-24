@@ -35,16 +35,16 @@
 		const t = e.target
 		if (t instanceof HTMLImageElement
 		 && (t.offsetWidth >= 185 || t.offsetHeight >= 185)) {
-			img = t
-			let focus = t.closest('a')
-			if (a !== focus) {
-				a = focus
+			if (img !== t) {
+				img = t
 				img.before(btn)
+				a = img.closest('a')
 				dl = parseInt(a && a.dataset.dl || '0')
-				btn.title = (!dl ? 'Download' : (dl < 2 ? 'Fav' : 'Unfave')) + ' Image'
+				btn.title = (!dl ? 'Download' :
+					(dl < 2 ? 'Fav' : 'Unfave')) + ' Image'
 			}
 			btn.className = ''
-		} else if (btn !== t && a !== t) {
+		} else if (btn !== t) {
 			btn.className = 'hide'
 		}
 	})

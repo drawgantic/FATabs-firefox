@@ -1,6 +1,5 @@
 (() => {
 	let img: HTMLImageElement
-	let a: HTMLAnchorElement | null
 
 	const btn = document.createElement('img')
 	btn.id = 'fatabs'
@@ -12,7 +11,8 @@
 		const s = src.substring(0, (q > 0) && q || undefined)
 		const ext = (q > 0) &&
 			new URLSearchParams(src.substring(q)).get('format') || 'jpg'
-		const artist = (a ? a.href : img.baseURI).match(
+		const a = img.closest('a')
+		const artist = (a && a.href || img.baseURI).match(
 			/.*:\/\/twitter\.com\/([a-zA-Z0-9_]+)/)
 		const filename = (artist ? artist[1].replace(/_/g, '-') + '_' : '')
 		               + s.substring(s.lastIndexOf('/') + 1) + '.' + ext
@@ -26,13 +26,12 @@
 		const t = e.target
 		if (t instanceof HTMLImageElement
 		 && (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
-			img = t
-			let focus = t.closest('a')
-			if (a !== focus) {
-				((a = focus) || img).before(btn)
+			if (img !== t) {
+				img = t
+				img.before(btn)
 			}
 			btn.className = ''
-		} else if (btn !== t && a !== t) {
+		} else if (btn !== t) {
 			btn.className = 'hide'
 		}
 	})
