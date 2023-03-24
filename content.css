@@ -26,10 +26,10 @@
 	opacity: 1;
 }
 
-*[data-dl] #fatabs {
+*[data-fav] #fatabs {
 	filter: hue-rotate(120deg);
 }
 
-*[data-dl='2'] #fatabs {
+*[data-fav='1'] #fatabs {
 	filter: hue-rotate(0deg);
 }

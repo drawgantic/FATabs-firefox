@@ -28,7 +28,7 @@
 					{ type: 'btn', src: url, filename: filename })
 			}
 		})
-		a.dataset.dl = '1'
+		a.dataset.fav = '0'
 		e.preventDefault()
 	})
 

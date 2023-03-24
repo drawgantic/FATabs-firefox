@@ -1,34 +1,31 @@
 (() => {
 	let img: HTMLImageElement
 	let a: HTMLAnchorElement
-	let dl: number
+	let fav: number
 
 	const btn = document.createElement('img')
 	btn.id = 'fatabs'
 	btn.src = browser.runtime.getURL('images/download.png')
 	btn.addEventListener('click', (e) => {
-		const fav = dl
+		const faved = fav
 		fetch(a.href)
 		.then((response) => response.text())
 		.then((text) => {
-			if (fav) { // fav/unfav
-				const m = text.match(new RegExp(`(/${fav < 2 ? 'fav' : 'unfav'}/.*?)"`))
-				if (m) {
-					fetch(`https://www.furaffinity.net${m[1]}`)
-				}
-			} else { // download
+			if (faved < 0) { // download
 				const m = text.match(/(d.furaffinity.net\/.*?)"/)
 				if (m) {
 					browser.runtime.sendMessage({ type: 'btn', src: `https://${m[1]}` })
 				}
+			} else { // (un)fav
+				const m = text.match(new RegExp(`(/${faved ? 'unfav' : 'fav'}/.*?)"`))
+				if (m) {
+					fetch(`https://www.furaffinity.net${m[1]}`)
+				}
 			}
 		})
-		if (dl < 2) {
-			dl++ ; btn.title = 'Fav Image'
-		} else {
-			dl-- ; btn.title = 'UnFav Image'
-		}
-		a.dataset.dl = dl.toString()
+		fav = +!fav
+		btn.title = fav ? 'Fav' : 'UnFav'
+		a.dataset.fav = fav.toString()
 		e.preventDefault()
 	})
 
@@ -41,10 +38,13 @@
 				const anc = t.closest('a')
 				if (anc) {
 					(a = anc).prepend(btn)
-					dl = parseInt(a.dataset.dl || '0')
-					btn.title = (!dl ? 'Download' :
-						(dl < 2 ? 'Fav' : 'Unfave')) + ' Image'
 					img = t
+					fav = parseInt(a.dataset.fav || '-1')
+					switch (fav) {
+						case -1: btn.title = 'Download'; break
+						case +0: btn.title = 'Fav'     ; break
+						case +1: btn.title = 'UnFav'   ; break
+					}
 				}
 			}
 		} else if (btn !== t) {

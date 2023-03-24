@@ -17,7 +17,7 @@
 			               + match[3] + '.' + ext
 			browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
 		}
-		a.dataset.dl = '1'
+		a.dataset.fav = '0'
 		e.preventDefault()
 	})
 

@@ -19,7 +19,7 @@
 		src = s + '?format=' + ext + '&name=orig'
 		browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
 		if (img.parentElement) {
-			img.parentElement.dataset.dl = '1'
+			img.parentElement.dataset.fav = '0'
 		}
 		e.stopPropagation()
 		e.preventDefault()
