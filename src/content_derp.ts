@@ -2,9 +2,10 @@
 	let img: HTMLImageElement
 	let a: HTMLAnchorElement | null
 
-	const btn = document.createElement('div')
+	const btn = document.createElement('img')
 	btn.id = 'fatabs'
 	btn.title = 'Download Image'
+	btn.src = browser.runtime.getURL('images/download.png')
 	btn.addEventListener('click', (e) => {
 		let match = img.src.match(
 			/https:\/\/(derpicdn\.net|furrycdn\.org)\/img\/(\d+\/\d+\/\d+)\/(\d+)\/\w+\.(\w+)/)

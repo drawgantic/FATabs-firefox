@@ -4,20 +4,18 @@
  }
 
 #fatabs {
-	width: 60px;
-	height: 60px;
-	margin-bottom: -60px;
+	width: 60px !important;
+	height: 60px !important;
 	left: calc(50% - 30px);
-
-	cursor: pointer;
-	position: relative;
 	z-index: 2147483647;
-	background-size: 100% 100%;
-	background-repeat: no-repeat;
-	background-image: url("images/download.png");
-	opacity: 0.5;
-	transition: 0.1s;
+	position: absolute;
+	cursor: pointer;
+
 	animation: fadein 0.1s;
+	transition: 0.1s;
+
+	filter: hue-rotate(240deg);
+	opacity: 0.5;
 }
 
 #fatabs.hide {
@@ -28,19 +26,10 @@
 	opacity: 1;
 }
 
-#fatabs:active {
-	filter: hue-rotate(45deg);
+a[data-dl] #fatabs {
+	filter: hue-rotate(120deg);
 }
 
-a > img.fabui_thumbfav {
-	width: 32px !important;
-	height: 32px !important;
-	padding: 0 !important;
-	left: auto !important;
-	right: 0;
-	opacity: 0.5;
-}
-
-a > img.fabui_removesub {
-	visibility: hidden;
+a[data-dl='2'] #fatabs {
+	filter: hue-rotate(0deg);
 }
