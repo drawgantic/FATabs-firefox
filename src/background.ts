@@ -46,10 +46,10 @@ function downloadImages(index: number | undefined = undefined) {
 			}
 			const id: number = tab.id
 			browser.scripting.executeScript({ target: {tabId: id}, func: () => {
-				return (<HTMLAnchorElement>document
-					.getElementsByClassName('download')[0].firstChild).href
+				const a = document.getElementsByClassName('download')[0].firstChild
+				return (a && a instanceof HTMLAnchorElement) ? a.href : undefined
 			}}).then( (img) => {
-				if (img.length > 0) {
+				if (img.length > 0 && img[0].result) {
 					browser.downloads.download({ url: img[0].result, saveAs: false })
 					if (i === last) {
 						browser.tabs.query({ windowType: 'normal' })

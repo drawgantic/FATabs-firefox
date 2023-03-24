@@ -6,6 +6,8 @@ if (header.length > 0) {
 }
 
 document.addEventListener('click', (e) => {
-	browser.runtime.sendMessage({ type: (<HTMLElement>e.target).id })
+	if (e.target instanceof HTMLElement) {
+		browser.runtime.sendMessage({ type: e.target.id })
+	}
 	e.preventDefault()
 })

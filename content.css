@@ -26,10 +26,10 @@
 	opacity: 1;
 }
 
-a[data-dl] #fatabs {
+*[data-dl] #fatabs {
 	filter: hue-rotate(120deg);
 }
 
-a[data-dl='2'] #fatabs {
+*[data-dl='2'] #fatabs {
 	filter: hue-rotate(0deg);
 }

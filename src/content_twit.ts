@@ -18,6 +18,9 @@
 		               + s.substring(s.lastIndexOf('/') + 1) + '.' + ext
 		src = s + '?format=' + ext + '&name=orig'
 		browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
+		if (img.parentElement) {
+			img.parentElement.dataset.dl = '1'
+		}
 		e.stopPropagation()
 		e.preventDefault()
 	})
@@ -26,11 +29,11 @@
 		const t = e.target
 		if (t instanceof HTMLImageElement
 		 && (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
+			btn.className = ''
 			if (img !== t) {
 				img = t
 				img.before(btn)
 			}
-			btn.className = ''
 		} else if (btn !== t) {
 			btn.className = 'hide'
 		}
