@@ -23,6 +23,9 @@
 
 	document.addEventListener('mouseover', (e) => {
 		const t = e.target
+		if (t === btn || t === a) {
+			return
+		}
 		if (t instanceof HTMLImageElement
 		 && (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
 			btn.className = ''
@@ -33,7 +36,7 @@
 					img = t
 				}
 			}
-		} else if (btn !== t && a !== t) {
+		} else {
 			btn.className = 'hide'
 		}
 	})

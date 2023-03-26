@@ -34,6 +34,9 @@
 
 	document.addEventListener('mouseover', (e) => {
 		const t = e.target
+		if (t === btn) {
+			return
+		}
 		if (t instanceof HTMLAnchorElement) {
 			const next = t.nextElementSibling
 			const prev = t.previousElementSibling
@@ -59,7 +62,7 @@
 					img = t
 				}
 			}
-		} else if (btn !== t) {
+		} else {
 			btn.className = 'hide'
 		}
 	})
