@@ -2,46 +2,48 @@
 	let img: HTMLImageElement | HTMLVideoElement
 	const reg = /.*:\/\/twitter\.com\/([a-zA-Z0-9_]+)\/status\/(\d+)/
 
+	const cookies: { [key: string]: string } = {}
+	document.cookie.split(';').filter(n => n.indexOf('=') > 0).forEach((n) => {
+		n.replace(/^([^=]+)=(.+)$/, (match, name, value) => {
+			return cookies[name.trim()] = value.trim()
+		})
+	})
+	const headers: { [key: string]: string } = {
+		'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6'
+			+ 'I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
+		'x-twitter-active-user': 'yes',
+		'x-twitter-client-language': cookies.lang,
+		'x-csrf-token': cookies.ct0
+	}
+	if (cookies.ct0.length == 32) {
+		headers['x-guest-token'] = cookies.gt
+	}
+
 	const btn = document.createElement('img')
 	btn.id = 'fatabs'
 	btn.title = 'Download Image'
 	btn.src = browser.runtime.getURL('images/download.png')
 	btn.addEventListener('click', (e) => {
+		let a = img.closest('a')
+		if (!a) {
+			const article = img.closest('article')
+			a = article && article.querySelector('a[href*="/status/"]')
+		}
+		const m = (a && a.href || img.baseURI).match(reg)
 		if (img instanceof HTMLImageElement) {
-			// image handling
-			let src = img.src
-			const q = src.indexOf('?')
-			const s = src.substring(0, (q > 0) && q || undefined)
-			const ext = src.substring(q + 8, src.indexOf('&', q + 8))
-			const a = img.closest('a')
-			const m = (a && a.href || img.baseURI).match(reg)
+			const q = img.src.indexOf('?')
+			const s = img.src.substring(0, q)
+			const ext = img.src.substring(q + 8, img.src.indexOf('&', q + 8))
+			const src = s + '?format=' + ext + '&name=orig'
 			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.` : '')
 				+ s.substring(s.lastIndexOf('/') + 1) + '.' + ext
-			src = s + '?format=' + ext + '&name=orig'
 			browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
-		} else {
-			// video handling
-			const cookies: { [key: string]: string } = {}
-			document.cookie.split(';').filter(n => n.indexOf('=') > 0).forEach((n) => {
-				n.replace(/^([^=]+)=(.+)$/, (match, name, value) => {
-					return cookies[name.trim()] = value.trim()
-				})
-			})
-			const headers: { [key: string]: string } = {
-				'authorization': 'Bearer AAAAAAAAAAAAAAAAAAAAANRILgAAAAAAnNwIzUejRCOuH5E6'
-					+ 'I8xnZz4puTs%3D1Zv7ttfk8LF81IUq16cHjhLTvJu4FA33AGWWjCpTnA',
-				'x-twitter-active-user': 'yes',
-				'x-twitter-client-language': cookies.lang,
-				'x-csrf-token': cookies.ct0
-			}
-			if (cookies.ct0.length == 32) {
-				headers['x-guest-token'] = cookies.gt
-			}
-
-			const article = img.closest('article')
-			const a: HTMLAnchorElement | null =
-				article && article.querySelector('a[href*="/status/"]')
-			const m = a && a.href.match(reg)
+		} else if (img.src.startsWith('http')) { // gif
+			const src = img.src
+			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.` : '')
+				+ src.substring(src.lastIndexOf('/') + 1)
+			browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
+		} else { // video
 			if (!m) {
 				return
 			}
