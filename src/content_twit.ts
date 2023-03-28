@@ -22,14 +22,12 @@
 	const btn = document.createElement('img')
 	btn.id = 'fatabs'
 	btn.title = 'Download Image'
-	btn.src = browser.runtime.getURL('images/download.png')
+	btn.src = browser.runtime.getURL('images/download.svg')
 	btn.addEventListener('click', (e) => {
-		let a = img.closest('a')
-		if (!a) {
-			const article = img.closest('article')
-			a = article && article.querySelector('a[href*="/status/"]')
-		}
-		const m = (a && a.href || img.baseURI).match(reg)
+		let a: HTMLAnchorElement | null, b: HTMLElement | null
+		const m = (( (a = img.closest('a')) || (a = (b = img.closest('article'))
+			&& b.querySelector('a[href*="/status/"]')) )
+			&& a.href || img.baseURI).match(reg)
 		if (img instanceof HTMLImageElement) {
 			const q = img.src.indexOf('?')
 			const s = img.src.substring(0, q)

@@ -5,7 +5,7 @@
 	const btn = document.createElement('img')
 	btn.id = 'fatabs'
 	btn.title = 'Download Image'
-	btn.src = browser.runtime.getURL('images/download.png')
+	btn.src = browser.runtime.getURL('images/download.svg')
 	btn.addEventListener('click', (e) => {
 		const src = img.src
 		fetch(a.href)
