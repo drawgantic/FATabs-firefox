@@ -45,6 +45,7 @@
 			if (!m) {
 				return
 			}
+			const vid = img
 			const url = 'https://twitter.com/i/api/2/timeline/conversation/'
 				+ m[2] + '.json?tweet_mode=extended&include_entities=false'
 				+ '&include_user_entities=false'
@@ -64,9 +65,14 @@
 				} else {
 					return
 				}
-				const media = tweet.extended_entities && tweet.extended_entities.media[0]
+				let media = tweet.extended_entities && tweet.extended_entities.media
 				if (!media) {
 					return
+				} else if (media.length > 1) {
+					const n = vid.poster.match(/\/(\d+)\//)
+					media = (n ? media.filter((obj: any) => obj.id_str == n[1]) : media)[0]
+				} else {
+					media = media[0]
 				}
 				const src: string = media.video_info.variants
 					.filter((n: any) => n.content_type == 'video/mp4')
