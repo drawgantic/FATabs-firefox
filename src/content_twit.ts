@@ -24,6 +24,9 @@
 	btn.title = 'Download Image'
 	btn.src = browser.runtime.getURL('images/download.svg')
 	btn.addEventListener('click', (e) => {
+		if (btn.parentElement) {
+			btn.parentElement.dataset.fav = '0'
+		}
 		let a: HTMLAnchorElement | null, b: HTMLElement | null
 		const m = (( (a = img.closest('a')) || (a = (b = img.closest('article'))
 			&& b.querySelector('a[href*="/status/"]')) )
@@ -82,9 +85,6 @@
 				const filename = `${user_id.replace(/_/g, '-')}_${status_id}.${name}.mp4`
 				browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
 			})
-		}
-		if (btn.parentElement) {
-			btn.parentElement.dataset.fav = '0'
 		}
 		e.stopPropagation()
 		e.preventDefault()

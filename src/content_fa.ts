@@ -7,25 +7,25 @@
 	btn.id = 'fatabs'
 	btn.src = browser.runtime.getURL('images/download.svg')
 	btn.addEventListener('click', (e) => {
-		const faved = fav
+		const prev = fav
+		fav = +!fav
+		btn.title = fav ? 'Fav' : 'UnFav'
+		a.dataset.fav = fav.toString()
 		fetch(a.href)
 		.then((response) => response.text())
 		.then((text) => {
-			if (faved < 0) { // download
+			if (prev < 0) { // download
 				const m = text.match(/(d.furaffinity.net\/.*?)"/)
 				if (m) {
 					browser.runtime.sendMessage({ type: 'btn', src: `https://${m[1]}` })
 				}
 			} else { // (un)fav
-				const m = text.match(new RegExp(`(/${faved ? 'unfav' : 'fav'}/.*?)"`))
+				const m = text.match(new RegExp(`(/${prev ? 'un' : ''}fav/.*?)"`))
 				if (m) {
 					fetch(`https://www.furaffinity.net${m[1]}`)
 				}
 			}
 		})
-		fav = +!fav
-		btn.title = fav ? 'Fav' : 'UnFav'
-		a.dataset.fav = fav.toString()
 		e.preventDefault()
 	})
 

@@ -7,17 +7,18 @@
 	btn.title = 'Download Image'
 	btn.src = browser.runtime.getURL('images/download.svg')
 	btn.addEventListener('click', (e) => {
-		const match = img.src.match(
-			/(derpicdn\.net|furrycdn\.org)\/img\/(\d+\/\d+\/\d+)\/(\d+)\/\w+\.(\w+)/)
-		if (match) {
-			const ext = (match[4] === 'gif') ? 'webm' : match[4]
-			const src = `https://${match[1]}/img/view/${match[2]}/${match[3]}.${ext}`
-			const artist = img.alt.match(/(?:artist|editor):([0-9A-Za-z-_ ]+)/)
-			const filename = (artist ? artist[1].replace(/[_ ]/g, '-') + '_' : '')
-			               + match[3] + '.' + ext
-			browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
-		}
 		a.dataset.fav = '0'
+		const m = img.src.match(
+			/(derpicdn\.net|furrycdn\.org)\/img\/(\d+\/\d+\/\d+)\/(\d+)\/\w+\.(\w+)/)
+		if (!m) {
+			return
+		}
+		const ext = (m[4] === 'gif') ? 'webm' : m[4]
+		const src = `https://${m[1]}/img/view/${m[2]}/${m[3]}.${ext}`
+		const artist = img.alt.match(/(?:artist|editor):([0-9A-Za-z-_ ]+)/)
+		const filename =
+			(artist ? artist[1].replace(/[_ ]/g, '-') + '_' : '') + m[3] + '.' + ext
+		browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
 		e.preventDefault()
 	})
 

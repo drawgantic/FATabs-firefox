@@ -7,13 +7,14 @@
 	btn.title = 'Download Image'
 	btn.src = browser.runtime.getURL('images/download.svg')
 	btn.addEventListener('click', (e) => {
-		const src = img.src
+		const url = img.src
+		a.dataset.fav = '0'
 		fetch(a.href)
 		.then((response) => response.text())
 		.then((text) => {
-			const match = text.match(/(?:<div><img|<video).*?src="(.*?)"/)
-			if (match) {
-				const url = match[1]
+			const m = text.match(/(?:<div><img|<video).*?src="(.*?)"/)
+			if (m) {
+				const src = m[1]
 				let s: number | undefined = src.indexOf('?')
 				let u: number | undefined
 				if (s == -1) {
@@ -22,13 +23,12 @@
 					u = url.indexOf('?')
 				}
 				const filename =
-					src.substring(src.lastIndexOf('/', s) + 1, src.lastIndexOf('-', s)) +
-					url.substring(url.lastIndexOf('.', u), u)
+					url.substring(url.lastIndexOf('/', u) + 1, url.lastIndexOf('-', u)) +
+					src.substring(src.lastIndexOf('.', s), s)
 				browser.runtime.sendMessage(
-					{ type: 'btn', src: url, filename: filename })
+					{ type: 'btn', src: src, filename: filename })
 			}
 		})
-		a.dataset.fav = '0'
 		e.preventDefault()
 	})
 
