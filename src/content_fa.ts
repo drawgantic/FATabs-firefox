@@ -35,7 +35,7 @@
 			return
 		}
 		if (t instanceof HTMLImageElement
-		 && (t.offsetWidth >= 185 || t.offsetHeight >= 185)) {
+		 && (t.offsetWidth >= 180 || t.offsetHeight >= 180)) {
 			btn.className = ''
 			if (img !== t) {
 				const anc = t.closest('a')
