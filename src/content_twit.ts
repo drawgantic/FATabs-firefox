@@ -55,8 +55,9 @@
 			fetch(url, {headers: headers})
 			.then((result) => result.json())
 			.then((json) => {
+				let user_id: string
+				let status_id: string
 				let tweet = json.globalObjects.tweets[m[2]]
-				let user_id: string, status_id: string
 				if (tweet.extended_entities) {
 					user_id   = m[1]
 					status_id = m[2]

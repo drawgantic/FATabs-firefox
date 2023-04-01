@@ -1,7 +1,7 @@
 @keyframes fadein {
 	0%   {opacity: 0;}
 	100% {opacity: 0.5;}
- }
+}
 
 #fatabs {
 	width: 60px !important;

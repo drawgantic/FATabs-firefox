@@ -9,21 +9,17 @@
 	btn.addEventListener('click', (e) => {
 		const prev = fav
 		fav = +!fav
-		btn.title = fav ? 'Fav' : 'UnFav'
+		btn.title = (fav ? 'UnFav' : 'Fav') + ' Image'
 		a.dataset.fav = fav.toString()
 		fetch(a.href)
 		.then((response) => response.text())
 		.then((text) => {
 			if (prev < 0) { // download
-				const m = text.match(/(d.furaffinity.net\/.*?)"/)
-				if (m) {
-					browser.runtime.sendMessage({ type: 'btn', src: `https://${m[1]}` })
-				}
+				const m = text.match(/(d\.furaffinity\.net\/.*?)"/)
+				m && browser.runtime.sendMessage({ type: 'btn', src: `https://${m[1]}` })
 			} else { // (un)fav
 				const m = text.match(new RegExp(`(/${prev ? 'un' : ''}fav/.*?)"`))
-				if (m) {
-					fetch(`https://www.furaffinity.net${m[1]}`)
-				}
+				m && fetch(`https://www.furaffinity.net${m[1]}`)
 			}
 		})
 		e.preventDefault()
@@ -43,11 +39,8 @@
 					(a = anc).prepend(btn)
 					img = t
 					fav = parseInt(a.dataset.fav || '-1')
-					switch (fav) {
-						case -1: btn.title = 'Download'; break
-						case +0: btn.title = 'Fav'     ; break
-						case +1: btn.title = 'UnFav'   ; break
-					}
+					btn.title = (fav == -1 ? 'Download' :
+						(fav == 0 ? 'Fav' : 'UnFav')) + ' Image'
 				}
 			}
 		} else {
