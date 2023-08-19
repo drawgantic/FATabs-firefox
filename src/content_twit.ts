@@ -36,8 +36,9 @@
 			const s = img.src.substring(0, q)
 			const ext = img.src.substring(q + 8, img.src.indexOf('&', q + 8))
 			const src = s + '?format=' + ext + '&name=orig'
-			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.` : '')
-				+ s.substring(s.lastIndexOf('/') + 1) + '.' + ext
+			const idx = a ? parseInt(a.href.substring(a.href.lastIndexOf('/') + 1)) : 0;
+			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.${idx}`
+				: s.substring(s.lastIndexOf('/') + 1)) + '.' + ext
 			browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
 		} else if (img.src.startsWith('http')) { // gif
 			const src = img.src
