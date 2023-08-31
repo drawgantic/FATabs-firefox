@@ -28,15 +28,16 @@
 			btn.parentElement.dataset.fav = '0'
 		}
 		let a: HTMLAnchorElement | null, b: HTMLElement | null
-		const m = (( (a = img.closest('a')) || (a = (b = img.closest('article'))
+		const input = ( (a = img.closest('a')) || (a = (b = img.closest('article'))
 			&& b.querySelector('a[href*="/status/"]')) )
-			&& a.href || img.baseURI).match(reg)
+			&& a.href || img.baseURI
+		const m = input.match(reg)
 		if (img instanceof HTMLImageElement) {
 			const q = img.src.indexOf('?')
 			const s = img.src.substring(0, q)
 			const ext = img.src.substring(q + 8, img.src.indexOf('&', q + 8))
 			const src = s + '?format=' + ext + '&name=orig'
-			const idx = a ? parseInt(a.href.substring(a.href.lastIndexOf('/') + 1)) : 0;
+			const idx = parseInt(input.substring(input.lastIndexOf('/') + 1));
 			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.${idx}`
 				: s.substring(s.lastIndexOf('/') + 1)) + '.' + ext
 			browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
