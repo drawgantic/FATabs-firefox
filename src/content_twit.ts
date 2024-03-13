@@ -83,9 +83,9 @@
 				const src: string = media.video_info.variants
 					.filter((n: any) => n.content_type == 'video/mp4')
 					.sort((a: any, b: any) => b.bitrate - a.bitrate)[0].url
-				const dot = src.lastIndexOf('.')
-				const name = src.substring(src.lastIndexOf('/', dot) + 1, dot)
-				const filename = `${user_id.replace(/_/g, '-')}_${status_id}.${name}.mp4`
+				const expand = media.expanded_url
+				const idx = parseInt(expand.substring(expand.lastIndexOf('/') + 1));
+				const filename = `${user_id.replace(/_/g, '-')}_${status_id}.${idx}.mp4`
 				browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
 			})
 		}
