@@ -57,34 +57,33 @@
 			fetch(url, {headers: headers})
 			.then((result) => result.json())
 			.then((json) => {
-				let user_id: string
-				let status_id: string
 				let tweet = json.globalObjects.tweets[m[2]]
-				if (tweet.extended_entities) {
-					user_id   = m[1]
-					status_id = m[2]
-				} else if (tweet.quoted_status_id_str) {
-					const n = tweet.quoted_status_permalink.expanded.match(reg)
-					user_id = n && n[1] || m[1]
-					status_id = tweet.quoted_status_id_str
-					tweet = json.globalObjects.tweets[status_id]
-				} else {
-					return
+				if (tweet.quoted_status_id_str) {
+					tweet = json.globalObjects.tweets[tweet.quoted_status_id_str]
 				}
-				let media = tweet.extended_entities && tweet.extended_entities.media
+				let idx = 1
+				let media = null
+				if (tweet.extended_entities) {
+					media = tweet.extended_entities.media
+				}
 				if (!media) {
 					return
 				} else if (media.length > 1) {
 					const n = vid.poster.match(/\/(\d+)\//)
-					media = (n ? media.filter((obj: any) => obj.id_str == n[1]) : media)[0]
+					if (n) {
+						const elem = media.find((x: any) => x.id_str == n[1])
+						idx = media.indexOf(elem) + 1
+						media = elem
+					}
 				} else {
 					media = media[0]
 				}
+				const n = media.expanded_url.match(reg)
+				const user_id = n[1]
+				const status_id = n[2]
 				const src: string = media.video_info.variants
 					.filter((n: any) => n.content_type == 'video/mp4')
 					.sort((a: any, b: any) => b.bitrate - a.bitrate)[0].url
-				const expand = media.expanded_url
-				const idx = parseInt(expand.substring(expand.lastIndexOf('/') + 1));
 				const filename = `${user_id.replace(/_/g, '-')}_${status_id}.${idx}.mp4`
 				browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
 			})
