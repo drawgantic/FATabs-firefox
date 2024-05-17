@@ -1,6 +1,6 @@
 (() => {
 	let img: HTMLImageElement | HTMLVideoElement
-	const reg = /.*:\/\/twitter\.com\/([a-zA-Z0-9_]+)\/status\/(\d+)/
+	const reg = /.*:\/\/(?:x|twitter)\.com\/([a-zA-Z0-9_]+)\/status\/(\d+)/
 
 	const cookies: { [key: string]: string } = {}
 	document.cookie.split(';').filter(n => n.indexOf('=') > 0).forEach((n) => {
@@ -37,7 +37,7 @@
 			const s = img.src.substring(0, q)
 			const ext = img.src.substring(q + 8, img.src.indexOf('&', q + 8))
 			const src = s + '?format=' + ext + '&name=orig'
-			const idx = parseInt(input.substring(input.lastIndexOf('/') + 1));
+			const idx = parseInt(input.substring(input.lastIndexOf('/') + 1))
 			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.${idx}`
 				: s.substring(s.lastIndexOf('/') + 1)) + '.' + ext
 			browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
@@ -51,7 +51,7 @@
 				return
 			}
 			const vid = img
-			const url = 'https://twitter.com/i/api/2/timeline/conversation/'
+			const url = 'https://x.com/i/api/2/timeline/conversation/'
 				+ m[2] + '.json?tweet_mode=extended&include_entities=false'
 				+ '&include_user_entities=false'
 			fetch(url, {headers: headers})
