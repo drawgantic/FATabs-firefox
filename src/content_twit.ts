@@ -58,14 +58,12 @@
 			.then((result) => result.json())
 			.then((json) => {
 				let tweet = json.globalObjects.tweets[m[2]]
-				if (tweet.quoted_status_id_str) {
+				let media = tweet.extended_entities && tweet.extended_entities.media
+				if (!media && tweet.quoted_status_id_str) {
 					tweet = json.globalObjects.tweets[tweet.quoted_status_id_str]
+					media = tweet.extended_entities && tweet.extended_entities.media
 				}
 				let idx = 1
-				let media = null
-				if (tweet.extended_entities) {
-					media = tweet.extended_entities.media
-				}
 				if (!media) {
 					return
 				} else if (media.length > 1) {
