@@ -41,11 +41,6 @@
 			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.${idx}`
 				: s.substring(s.lastIndexOf('/') + 1)) + '.' + ext
 			browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
-		} else if (img.src.startsWith('http')) { // gif
-			const src = img.src
-			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.` : '')
-				+ src.substring(src.lastIndexOf('/') + 1)
-			browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename })
 		} else { // video
 			if (!m) {
 				return
