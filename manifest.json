@@ -1,7 +1,7 @@
 {
 	"manifest_version": 2,
 	"name": "FATabs",
-	"version": "1.48",
+	"version": "1.49",
 	"author": "Dragantic",
 	"description": "Batch-download images from open FurAffinity view tabs",
 	"homepage_url": "https://github.com/dragantic/fatabs-firefox",
@@ -43,6 +43,11 @@
 		{
 			"matches": ["*://*.deviantart.com/*"],
 			"js": ["js/content_da.js"],
+			"css": ["content.css"]
+		},
+		{
+			"matches": ["*://bsky.app/*"],
+			"js": ["js/content_bsky.js"],
 			"css": ["content.css"]
 		}
 	],
