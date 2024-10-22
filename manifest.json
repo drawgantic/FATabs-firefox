@@ -1,10 +1,10 @@
 {
 	"manifest_version": 2,
 	"name": "FATabs",
-	"version": "1.49",
+	"version": "1.50",
 	"author": "Dragantic",
 	"description": "Batch-download images from open FurAffinity view tabs",
-	"homepage_url": "https://github.com/dragantic/fatabs-firefox",
+	"homepage_url": "https://github.com/drawgantic/FATabs-firefox",
 
 	"icons": {
 		"32": "images/icon-32.png",
