@@ -10,6 +10,7 @@
 	interface Media {
 		video_info: VideoInfo;
 		expanded_url: string;
+		media_url: string;
 		id_str: string;
 	};
 	interface Extended {
@@ -25,6 +26,10 @@
 	interface Json {
 		globalObjects: GlobalObj;
 	};
+
+	function getHash(src: string): string {
+		return src.substring(src.lastIndexOf('/') + 1, src.lastIndexOf('.'));
+	}
 
 	let img: HTMLImageElement | HTMLVideoElement;
 	const reg = /.*:\/\/(?:x|twitter)\.com\/([a-zA-Z0-9_]+)\/status\/(\d+)/;
@@ -91,13 +96,20 @@
 					if (!media) {
 						return;
 					} else if (media.length > 1) {
-						const n = /\/(\d+)\//.exec(vid.poster);
-						if (n) {
-							const elem = media.find((x: Media) => x.id_str == n[1]);
+						if (vid.src.startsWith('http')) { // gif
+							const elem = media.find((x: Media) =>
+								getHash(x.media_url) == getHash(vid.src));
 							idx = elem ? media.indexOf(elem) + 1 : 0;
 							med = elem ?? media[0];
 						} else {
-							med = media[0];
+							const n = /\/(\d+)\//.exec(vid.poster);
+							if (n) {
+								const elem = media.find((x: Media) => x.id_str == n[1]);
+								idx = elem ? media.indexOf(elem) + 1 : 0;
+								med = elem ?? media[0];
+							} else {
+								med = media[0];
+							}
 						}
 					} else {
 						med = media[0];
