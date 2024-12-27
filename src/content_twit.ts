@@ -60,9 +60,9 @@
 			btn.parentElement.dataset.fav = '0';
 		}
 		let a: HTMLAnchorElement | null, b: HTMLElement | null;
-		const input = ((a = img.closest('a')
-			?? ((b = img.closest('article')) && b.querySelector('a[href*="/status/"]')))
-			&& a.href) ?? img.baseURI;
+		const input = ((a = img.closest('a') ?? ((b = img.closest('article'))
+			&& b.querySelector('a[href*="/status/"][dir="ltr"]')
+		)) && a.href) ?? img.baseURI;
 		const m = reg.exec(input);
 		if (img instanceof HTMLImageElement) {
 			const q = img.src.indexOf('?');
