@@ -68,8 +68,7 @@ function downloadImages(index: number | undefined = undefined) {
 					}
 				}).then((img) => {
 					if (img.length > 0 && img[0].result) {
-						void browser.downloads.download(
-							{ url: img[0].result as string, saveAs: false });
+						void browser.downloads.download({ url: img[0].result, saveAs: false });
 						if (i === last) {
 							browser.tabs.query({ windowType: 'normal' })
 								.then((all) => {

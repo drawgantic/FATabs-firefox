@@ -15,7 +15,7 @@
 			.then((response) => response.text())
 			.then((text) => {
 				if (prev < 0) { // download
-					const m = /(d\.furaffinity\.net\/.*?)"/.exec(text);
+					const m = /(d\.furaffinity\.net\/art\/.*?)"/.exec(text);
 					if (m) {
 						void browser.runtime.sendMessage(
 							{ type: 'btn', src: `https://${m[1]}` });
@@ -36,7 +36,7 @@
 			return;
 		}
 		if (t instanceof HTMLImageElement
-			&& (t.offsetWidth >= 180 || t.offsetHeight >= 180)) {
+			&& (t.offsetWidth >= 150 || t.offsetHeight >= 150)) {
 			btn.className = '';
 			if (img !== t) {
 				const anc = t.closest('a');
