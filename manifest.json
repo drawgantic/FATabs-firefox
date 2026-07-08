@@ -19,6 +19,14 @@
 		"default_popup": "popup.html",
 		"default_icon": "images/icon-32.png"
 	},
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "{00b1fbd5-2b04-4fc4-9f4e-ac20fb1a6677}",
+			"data_collection_permissions": {
+				"required": ["none"]
+			}
+		}
+	},
 	"web_accessible_resources": [
 		"images/download.svg"
 	 ],
