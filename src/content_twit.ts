@@ -1,32 +1,40 @@
-(() => {
-	interface Video {
+namespace X {
+	export interface Video {
 		content_type: string;
 		bitrate: number;
 		url: string;
-	};
-	interface VideoInfo {
+	}
+
+	export interface VideoInfo {
 		variants: Video[];
-	};
-	interface Media {
+	}
+
+	export interface Media {
 		video_info: VideoInfo;
 		expanded_url: string;
 		media_url: string;
 		id_str: string;
-	};
-	interface Extended {
+	}
+
+	export interface Extended {
 		media: Media[] | null;
-	};
-	interface Tweet {
+	}
+
+	export interface Tweet {
 		extended_entities: Extended | null;
 		quoted_status_id_str: string | null;
-	};
-	interface GlobalObj {
-		tweets: Record<string, Tweet>;
-	};
-	interface Json {
-		globalObjects: GlobalObj;
-	};
+	}
 
+	export interface GlobalObj {
+		tweets: Record<string, Tweet>;
+	}
+
+	export interface Json {
+		globalObjects: GlobalObj;
+	}
+}
+
+(() => {
 	function getHash(src: string): string {
 		return src.substring(src.lastIndexOf('/') + 1, src.lastIndexOf('.'));
 	}
@@ -59,7 +67,8 @@
 		if (btn.parentElement) {
 			btn.parentElement.dataset.fav = '0';
 		}
-		let a: HTMLAnchorElement | null, b: HTMLElement | null;
+		let a: HTMLAnchorElement | null;
+		let b: HTMLElement | null;
 		const input = ((a = img.closest('a') ?? ((b = img.closest('article'))
 			&& b.querySelector('a[href*="/status/"][dir="ltr"]')
 		)) && a.href) ?? img.baseURI;
@@ -84,10 +93,10 @@
 			void fetch(url, { headers: headers })
 				.then((result) => result.json())
 				.then((json) => {
-					const j = json as Json;
+					const j = json as X.Json;
 					let tweet = j.globalObjects.tweets[m[2]];
 					let media = tweet.extended_entities?.media;
-					let med: Media;
+					let med: X.Media;
 					if (!media && tweet.quoted_status_id_str) {
 						tweet = j.globalObjects.tweets[tweet.quoted_status_id_str];
 						media = tweet.extended_entities?.media;
@@ -97,14 +106,14 @@
 						return;
 					} else if (media.length > 1) {
 						if (vid.src.startsWith('http')) { // gif
-							const elem = media.find((x: Media) =>
+							const elem = media.find((x: X.Media) =>
 								getHash(x.media_url) == getHash(vid.src));
 							idx = elem ? media.indexOf(elem) + 1 : 0;
 							med = elem ?? media[0];
 						} else {
 							const n = /\/(\d+)\//.exec(vid.poster);
 							if (n) {
-								const elem = media.find((x: Media) => x.id_str == n[1]);
+								const elem = media.find((x: X.Media) => x.id_str == n[1]);
 								idx = elem ? media.indexOf(elem) + 1 : 0;
 								med = elem ?? media[0];
 							} else {
@@ -121,8 +130,8 @@
 					const user_id = n[1];
 					const status_id = n[2];
 					const src: string = med.video_info.variants
-						.filter((n: Video) => n.content_type == 'video/mp4')
-						.sort((a: Video, b: Video) => b.bitrate - a.bitrate)[0].url;
+						.filter((n: X.Video) => n.content_type == 'video/mp4')
+						.sort((a: X.Video, b: X.Video) => b.bitrate - a.bitrate)[0].url;
 					const filename = `${user_id.replace(/_/g, '-')}_`
 						+ `${status_id}.${idx.toString()}.mp4`;
 					void browser.runtime.sendMessage(
@@ -147,14 +156,15 @@
 				btn.title = 'Download Image';
 			}
 		} else if (t instanceof HTMLDivElement) {
-			const a = t.parentElement?.parentElement;
-			let b: HTMLElement | null, vid: ChildNode | null;
-			let c: ChildNode | null, d: ChildNode | null;
+			let b: HTMLElement | null;
+			const z = t.parentElement;
+			const a = z && z.parentElement;
+			const c = a && ((b = a.parentElement) && b.previousSibling
+				|| a.previousSibling);
+			const d = c && c.firstChild;
+			const vid = d && d.firstChild;
 
-			if (a && (vid = ((b = a.parentElement)
-				&& (c = b.previousSibling) && (d = c.firstChild) && d.firstChild)
-				|| ((c = a.previousSibling) && (d = c.firstChild) && d.firstChild)
-			) && vid instanceof HTMLVideoElement) {
+			if (vid && vid instanceof HTMLVideoElement) {
 				btn.className = '';
 				if (img !== vid) {
 					img = vid;

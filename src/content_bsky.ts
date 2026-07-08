@@ -1,4 +1,31 @@
+interface BskyProfile {
+	handle: string;
+}
+
 (() => {
+	const headers: Record<string, string> = {
+		'Content-Type': 'application/json'
+	};
+
+	function doRequest(did: string, cid: string, ext: string): void {
+		const getProfile = 'https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile'
+			+ `?actor=${did}`;
+		void fetch(getProfile, { headers: headers })
+			.then((profile) => profile.json())
+			.then((json) => {
+				const j = json as BskyProfile;
+				const getBlob = 'https://bsky.social/xrpc/com.atproto.sync.getBlob'
+					+ `?did=${did}&cid=${cid}`;
+				void fetch(getBlob, { headers: headers })
+					.then((response) => {
+						const handle = j.handle.split('.')[0].replace(/_/g, '-');
+						const filename = handle + '_' + cid + '.' + ext;
+						void browser.runtime.sendMessage(
+							{ type: 'btn', src: response.url, filename: filename });
+					});
+			});
+	}
+
 	let img: HTMLImageElement | HTMLVideoElement;
 
 	const btn = document.createElement('img');
@@ -7,26 +34,31 @@
 	btn.src = browser.runtime.getURL('images/download.svg');
 
 	btn.addEventListener('click', (e) => {
+		e.stopPropagation();
+		e.preventDefault();
 		if (btn.parentElement) {
 			btn.parentElement.dataset.fav = '0';
 		}
 		if (img instanceof HTMLImageElement) {
 			const arr = img.src.split('/');
-			const did = arr[6];
-			const cid_ext = arr[7].split('@');
-			const cid = cid_ext[0];
-			const ext = (cid_ext[1] == 'jpeg') ? 'jpg' : cid_ext[1];
-			void browser.runtime.sendMessage(
-				{ type: 'bsky', did: did, cid: cid, ext: ext });
-		} else { // video
-			const arr = img.poster.split('/');
-			const did = arr[4];
-			const cid = arr[5];
-			void browser.runtime.sendMessage(
-				{ type: 'bsky', did: did, cid: cid, ext: 'mp4' });
+			const cid = arr[7].split('@');
+			doRequest(arr[6], cid[0], (cid[1] == 'jpeg') ? 'jpg' : cid[1]);
+			return;
 		}
-		e.stopPropagation();
-		e.preventDefault();
+		// video
+		const vid = img;
+		if (vid.poster != "") {
+			const arr = vid.poster.split('/');
+			doRequest(arr[4], arr[5], 'mp4');
+			return;
+		}
+		const sources = Array.from(vid.getElementsByTagName("source"))
+			.filter((s: HTMLSourceElement) => s.type == "video/mp4");
+		if (sources.length > 0) {
+			const src = sources[0].src;
+			const filename = src.substring(src.lastIndexOf('/') + 1);
+			void browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename });
+		}
 	});
 
 	document.addEventListener('mouseover', (e) => {
@@ -34,26 +66,40 @@
 		if (t === btn) {
 			return;
 		}
+		let candidate: HTMLImageElement | HTMLVideoElement | null = null;
+		let sibling: ChildNode = t as ChildNode;
 		if (t instanceof HTMLImageElement
 			&& (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
-			btn.className = '';
-			if (img !== t) {
-				img = t;
-				img.before(btn);
-				btn.title = 'Download Image';
-			}
+			candidate = sibling = t;
 		} else if (t instanceof HTMLButtonElement) {
-			let par: ChildNode | null, sib: ChildNode | null, vid: ChildNode | null;
-			if ((par = t.parentElement) && (sib = par.previousSibling)
-				&& (vid = sib.firstChild) && vid instanceof HTMLVideoElement) {
-				btn.className = '';
-				if (img !== vid) {
-					img = vid;
-					sib.before(btn);
-					btn.title = 'Download Video';
+			check: {
+				{
+					const par = t.parentElement;
+					const psib = par && par.previousSibling;
+					const sib = psib && (
+						psib instanceof HTMLButtonElement ? psib.previousSibling : psib
+					) || t.previousSibling;
+					const vid = sib && sib.firstChild;
+					if (vid && vid instanceof HTMLVideoElement) {
+						candidate = vid;
+						sibling = sib;
+						break check;
+					}
+				} {
+					const sib = t.nextSibling;
+					const vid = sib && sib.nextSibling;
+					if (vid && vid instanceof HTMLVideoElement) {
+						candidate = vid;
+					}
 				}
-			} else {
-				btn.className = 'hide';
+			}
+		}
+		if (candidate !== null) {
+			btn.className = '';
+			if (img !== candidate) {
+				img = candidate;
+				sibling.before(btn);
+				btn.title = 'Download Video';
 			}
 		} else {
 			btn.className = 'hide';

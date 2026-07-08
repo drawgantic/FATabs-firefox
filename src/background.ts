@@ -1,27 +1,19 @@
-interface reqBase {
+interface RequestBase {
 	type: string;
-};
-interface reqBtn extends reqBase {
+}
+
+interface RequestButton extends RequestBase {
 	src: string; filename: string;
-};
-interface reqBsky extends reqBase {
-	did: string; cid: string; ext: string;
-};
-interface Json {
-	handle: string;
-};
+}
 
 let running = false;
 let cancelled: boolean;
-const headers: Record<string, string> = {
-	'Content-Type': 'application/json'
-};
 
 function cancelDownload(): void {
 	cancelled = true;
 }
 
-function downloadImages(index: number | undefined = undefined) {
+function downloadImages(index: number | undefined = undefined): void {
 	if (running) {
 		return;
 	}
@@ -92,10 +84,10 @@ function downloadImages(index: number | undefined = undefined) {
 	running = false;
 }
 
-browser.runtime.onMessage.addListener((request: reqBase) => {
+browser.runtime.onMessage.addListener((request: RequestBase) => {
 	switch (request.type) {
 		case 'btn': {
-			const r = request as reqBtn;
+			const r = request as RequestButton;
 			void browser.downloads.download(
 				{ url: r.src, filename: r.filename, saveAs: false });
 			break;
@@ -117,26 +109,6 @@ browser.runtime.onMessage.addListener((request: reqBase) => {
 		case 'cancel':
 			cancelDownload();
 			break;
-		case 'bsky': {
-			const r = request as reqBsky;
-			const getProfile = 'https://public.api.bsky.app/xrpc/app.bsky.actor.getProfile'
-				+ `?actor=${r.did}`;
-			void fetch(getProfile, { headers: headers })
-				.then((profile) => profile.json())
-				.then((json) => {
-					const j = json as Json;
-					const getBlob = 'https://bsky.social/xrpc/com.atproto.sync.getBlob'
-						+ `?did=${r.did}&cid=${r.cid}`;
-					void fetch(getBlob, { headers: headers })
-						.then((response) => {
-							const handle = j.handle.split('.')[0].replace(/_/g, '-');
-							const filename = handle + '_' + r.cid + '.' + r.ext;
-							void browser.downloads.download(
-								{ url: response.url, filename: filename, saveAs: false });
-						});
-				});
-			break;
-		}
 		default:
 			downloadImages();
 	}
