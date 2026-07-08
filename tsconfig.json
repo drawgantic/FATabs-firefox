@@ -1,10 +1,12 @@
 {
 	"compilerOptions": {
 		"strict": true,
+		"rootDir": "./src",
 		"outDir": "./js",
 		"noUnusedLocals": true,
 		"noUnusedParameters": true,
-		"target": "es6"
+		"target": "es2025",
+		"types": ["firefox-webext-browser", "chrome"]
 	},
 	"include": ["src/**/*.ts"]
 }
