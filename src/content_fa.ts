@@ -7,6 +7,8 @@
 	btn.id = 'fatabs';
 	btn.src = browser.runtime.getURL('images/download.svg');
 	btn.addEventListener('click', (e) => {
+		e.stopPropagation();
+		e.preventDefault();
 		const prev = fav;
 		fav = +!fav;
 		btn.title = (fav ? 'UnFav' : 'Fav') + ' Image';
@@ -27,7 +29,6 @@
 					}
 				}
 			});
-		e.preventDefault();
 	});
 
 	document.addEventListener('mouseover', (e) => {

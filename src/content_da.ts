@@ -7,6 +7,8 @@
 	btn.title = 'Download Image';
 	btn.src = browser.runtime.getURL('images/download.svg');
 	btn.addEventListener('click', (e) => {
+		e.stopPropagation();
+		e.preventDefault();
 		const url = img.src;
 		a.dataset.fav = '0';
 		void fetch(a.href)
@@ -29,7 +31,6 @@
 						{ type: 'btn', src: src, filename: filename });
 				}
 			});
-		e.preventDefault();
 	});
 
 	document.addEventListener('mouseover', (e) => {

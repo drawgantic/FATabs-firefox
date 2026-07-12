@@ -64,6 +64,8 @@ namespace X {
 	btn.title = 'Download Image';
 	btn.src = browser.runtime.getURL('images/download.svg');
 	btn.addEventListener('click', (e) => {
+		e.stopPropagation();
+		e.preventDefault();
 		if (btn.parentElement) {
 			btn.parentElement.dataset.fav = '0';
 		}
@@ -82,64 +84,63 @@ namespace X {
 			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.${idx.toString()}`
 				: s.substring(s.lastIndexOf('/') + 1)) + '.' + ext;
 			void browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename });
-		} else { // video
-			if (!m) {
-				return;
-			}
-			const vid = img;
-			const url = 'https://x.com/i/api/2/timeline/conversation/'
-				+ m[2] + '.json?tweet_mode=extended&include_entities=false'
-				+ '&include_user_entities=false';
-			void fetch(url, { headers: headers })
-				.then((result) => result.json())
-				.then((json) => {
-					const j = json as X.Json;
-					let tweet = j.globalObjects.tweets[m[2]];
-					let media = tweet.extended_entities?.media;
-					let med: X.Media;
-					if (!media && tweet.quoted_status_id_str) {
-						tweet = j.globalObjects.tweets[tweet.quoted_status_id_str];
-						media = tweet.extended_entities?.media;
-					}
-					let idx = 1;
-					if (!media) {
-						return;
-					} else if (media.length > 1) {
-						if (vid.src.startsWith('http')) { // gif
-							const elem = media.find((x: X.Media) =>
-								getHash(x.media_url) == getHash(vid.src));
+			return;
+		}
+		// video
+		if (!m) {
+			return;
+		}
+		const vid = img;
+		const url = 'https://x.com/i/api/2/timeline/conversation/'
+			+ m[2] + '.json?tweet_mode=extended&include_entities=false'
+			+ '&include_user_entities=false';
+		void fetch(url, { headers: headers })
+			.then((result) => result.json())
+			.then((json) => {
+				const j = json as X.Json;
+				let tweet = j.globalObjects.tweets[m[2]];
+				let media = tweet.extended_entities?.media;
+				let med: X.Media;
+				if (!media && tweet.quoted_status_id_str) {
+					tweet = j.globalObjects.tweets[tweet.quoted_status_id_str];
+					media = tweet.extended_entities?.media;
+				}
+				let idx = 1;
+				if (!media) {
+					return;
+				} else if (media.length > 1) {
+					if (vid.src.startsWith('http')) { // gif
+						const elem = media.find((x: X.Media) =>
+							getHash(x.media_url) == getHash(vid.src));
+						idx = elem ? media.indexOf(elem) + 1 : 0;
+						med = elem ?? media[0];
+					} else {
+						const n = /\/(\d+)\//.exec(vid.poster);
+						if (n) {
+							const elem = media.find((x: X.Media) => x.id_str == n[1]);
 							idx = elem ? media.indexOf(elem) + 1 : 0;
 							med = elem ?? media[0];
 						} else {
-							const n = /\/(\d+)\//.exec(vid.poster);
-							if (n) {
-								const elem = media.find((x: X.Media) => x.id_str == n[1]);
-								idx = elem ? media.indexOf(elem) + 1 : 0;
-								med = elem ?? media[0];
-							} else {
-								med = media[0];
-							}
+							med = media[0];
 						}
-					} else {
-						med = media[0];
 					}
-					const n = reg.exec(med.expanded_url);
-					if (!n || n.length < 3) {
-						return;
-					}
-					const user_id = n[1];
-					const status_id = n[2];
-					const src: string = med.video_info.variants
-						.filter((n: X.Video) => n.content_type == 'video/mp4')
-						.sort((a: X.Video, b: X.Video) => b.bitrate - a.bitrate)[0].url;
-					const filename = `${user_id.replace(/_/g, '-')}_`
-						+ `${status_id}.${idx.toString()}.mp4`;
-					void browser.runtime.sendMessage(
-						{ type: 'btn', src: src, filename: filename });
-				});
-		}
-		e.stopPropagation();
-		e.preventDefault();
+				} else {
+					med = media[0];
+				}
+				const n = reg.exec(med.expanded_url);
+				if (!n || n.length < 3) {
+					return;
+				}
+				const user_id = n[1];
+				const status_id = n[2];
+				const src: string = med.video_info.variants
+					.filter((n: X.Video) => n.content_type == 'video/mp4')
+					.sort((a: X.Video, b: X.Video) => b.bitrate - a.bitrate)[0].url;
+				const filename = `${user_id.replace(/_/g, '-')}_`
+					+ `${status_id}.${idx.toString()}.mp4`;
+				void browser.runtime.sendMessage(
+					{ type: 'btn', src: src, filename: filename });
+			});
 	});
 
 	document.addEventListener('mouseover', (e) => {
@@ -147,8 +148,10 @@ namespace X {
 		if (t === btn) {
 			return;
 		}
-		if (t instanceof HTMLImageElement
-			&& (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
+		if (
+			t instanceof HTMLImageElement
+			&& (t.offsetWidth >= 190 || t.offsetHeight >= 190)
+		) {
 			btn.className = '';
 			if (img !== t) {
 				img = t;

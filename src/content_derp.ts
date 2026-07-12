@@ -7,6 +7,8 @@
 	btn.title = 'Download Image';
 	btn.src = browser.runtime.getURL('images/download.svg');
 	btn.addEventListener('click', (e) => {
+		e.stopPropagation();
+		e.preventDefault();
 		a.dataset.fav = '0';
 		const m = /(derpicdn\.net|furrycdn\.org)\/img\/(\d+\/\d+\/\d+)\/(\d+)\/\w+\.(\w+)/
 			.exec(img.src);
@@ -19,7 +21,6 @@
 		const filename =
 			(artist ? artist[1].replace(/[_ ]/g, '-') + '_' : '') + m[3] + '.' + ext;
 		void browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename });
-		e.preventDefault();
 	});
 
 	document.addEventListener('mouseover', (e) => {
