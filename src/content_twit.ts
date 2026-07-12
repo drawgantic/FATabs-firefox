@@ -143,39 +143,37 @@ namespace X {
 			});
 	});
 
+	let prev_target: EventTarget | null = null;
+
 	document.addEventListener('mouseover', (e) => {
 		const t = e.target;
-		if (t === btn) {
+		if (t === btn || t === prev_target) {
 			return;
 		}
-		if (
-			t instanceof HTMLImageElement
-			&& (t.offsetWidth >= 190 || t.offsetHeight >= 190)
-		) {
-			btn.className = '';
-			if (img !== t) {
-				img = t;
-				img.before(btn);
-				btn.title = 'Download Image';
-			}
+		prev_target = t;
+		const is_img = t instanceof HTMLImageElement;
+		let candidate: HTMLImageElement | HTMLVideoElement | null = null;
+		let sibling: ChildNode = t as ChildNode;
+
+		if (is_img && (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
+			candidate = sibling = t;
 		} else if (t instanceof HTMLDivElement) {
-			let b: HTMLElement | null;
-			const z = t.parentElement;
-			const a = z && z.parentElement;
-			const c = a && ((b = a.parentElement) && b.previousSibling
+			const a = t.parentElement && t.parentElement.parentElement;
+			const b = a && (a.parentElement && a.parentElement.previousSibling
 				|| a.previousSibling);
-			const d = c && c.firstChild;
-			const vid = d && d.firstChild;
+			const vid = b && b.firstChild && b.firstChild.firstChild;
 
 			if (vid && vid instanceof HTMLVideoElement) {
-				btn.className = '';
-				if (img !== vid) {
-					img = vid;
-					c.before(btn);
-					btn.title = 'Download Video';
-				}
-			} else {
-				btn.className = 'hide';
+				candidate = vid;
+				sibling = b;
+			}
+		}
+		if (candidate !== null) {
+			btn.className = '';
+			if (img !== candidate) {
+				img = candidate;
+				sibling.before(btn);
+				btn.title = 'Download Video';
 			}
 		} else {
 			btn.className = 'hide';
