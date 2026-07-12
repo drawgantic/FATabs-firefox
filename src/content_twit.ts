@@ -74,7 +74,7 @@ namespace X {
 		const input = ((a = img.closest('a') ?? ((b = img.closest('article'))
 			&& b.querySelector('a[href*="/status/"][dir="ltr"]')
 		)) && a.href) ?? img.baseURI;
-		const m = reg.exec(input);
+		const m = input.match(reg);
 		if (img instanceof HTMLImageElement) {
 			const q = img.src.indexOf('?');
 			const s = img.src.substring(0, q);
@@ -115,7 +115,7 @@ namespace X {
 						idx = elem ? media.indexOf(elem) + 1 : 0;
 						med = elem ?? media[0];
 					} else {
-						const n = /\/(\d+)\//.exec(vid.poster);
+						const n = vid.poster.match(/\/(\d+)\//);
 						if (n) {
 							const elem = media.find((x: X.Media) => x.id_str == n[1]);
 							idx = elem ? media.indexOf(elem) + 1 : 0;
@@ -127,7 +127,7 @@ namespace X {
 				} else {
 					med = media[0];
 				}
-				const n = reg.exec(med.expanded_url);
+				const n = med.expanded_url.match(reg);
 				if (!n || n.length < 3) {
 					return;
 				}

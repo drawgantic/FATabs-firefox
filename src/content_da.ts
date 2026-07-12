@@ -14,7 +14,7 @@
 		void fetch(a.href)
 			.then((response) => response.text())
 			.then((text) => {
-				const m = /(?:<div><img|<video).*?src="(.*?)"/.exec(text);
+				const m = text.match(/(?:<div><img|<video).*?src="(.*?)"/);
 				if (m) {
 					const src = m[1];
 					let s: number | undefined = src.indexOf('?');

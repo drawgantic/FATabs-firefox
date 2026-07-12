@@ -17,13 +17,13 @@
 			.then((response) => response.text())
 			.then((text) => {
 				if (prev < 0) { // download
-					const m = /(d\.furaffinity\.net\/art\/.*?)"/.exec(text);
+					const m = text.match(/(d\.furaffinity\.net\/art\/.*?)"/);
 					if (m) {
 						void browser.runtime.sendMessage(
 							{ type: 'btn', src: `https://${m[1]}` });
 					}
 				} else { // (un)fav
-					const m = new RegExp(`(/${prev ? 'un' : ''}fav/.*?)"`).exec(text);
+					const m = text.match(new RegExp(`(/${prev ? 'un' : ''}fav/.*?)"`));
 					if (m) {
 						void fetch(`https://www.furaffinity.net${m[1]}`);
 					}

@@ -10,14 +10,14 @@
 		e.stopPropagation();
 		e.preventDefault();
 		a.dataset.fav = '0';
-		const m = /(derpicdn\.net|furrycdn\.org)\/img\/(\d+\/\d+\/\d+)\/(\d+)\/\w+\.(\w+)/
-			.exec(img.src);
+		const m = img.src.match(
+			/(derpicdn\.net|furrycdn\.org)\/img\/(\d+\/\d+\/\d+)\/(\d+)\/\w+\.(\w+)/);
 		if (!m) {
 			return;
 		}
 		const ext = (m[4] === 'gif') ? 'webm' : m[4];
 		const src = `https://${m[1]}/img/view/${m[2]}/${m[3]}.${ext}`;
-		const artist = /(?:artist|editor):([0-9A-Za-z-_ ]+)/.exec(img.alt);
+		const artist = img.alt.match(/(?:artist|editor):([0-9A-Za-z-_ ]+)/);
 		const filename =
 			(artist ? artist[1].replace(/[_ ]/g, '-') + '_' : '') + m[3] + '.' + ext;
 		void browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename });
