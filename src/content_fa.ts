@@ -19,10 +19,15 @@
 				if (prev < 0) { // download
 					const m = text.match(/(d\.furaffinity\.net\/art\/.*?)"/);
 					if (m) {
+						var name = m[1].substring(m[1].lastIndexOf('/') + 1);
+						const tag = name.indexOf('.');
+						const ext = name.lastIndexOf('.');
+						name = name.substring(tag + 1, ext) + '.'
+							+ name.substring(0, tag) + name.substring(ext);
 						void browser.runtime.sendMessage(
-							{ type: 'btn', src: `https://${m[1]}` });
+							{ type: 'btn', src: `https://${m[1]}`, filename: name });
 					}
-				} else { // (un)fav
+				} else { // fav/unfav toggle
 					const m = text.match(new RegExp(`(/${prev ? 'un' : ''}fav/.*?)"`));
 					if (m) {
 						void fetch(`https://www.furaffinity.net${m[1]}`);
