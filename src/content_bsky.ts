@@ -31,14 +31,14 @@ interface BskyProfile {
 		return null;
 	}
 
-	function getIndex(elem: HTMLImageElement | HTMLVideoElement): number {
+	function getIndex(el: HTMLImageElement | HTMLVideoElement): number {
 		// @ts-ignore
-		let top = elem.parentElement.parentElement.parentElement
+		let top = el.parentElement.parentElement.parentElement
 			.parentElement.parentElement.parentElement.parentElement;
 		const elems = !top ? [] : Array.from(top.querySelectorAll(
 			'img:not([id="fatabs"]), video'));
 		for (let i = 0; i < elems.length; i++) {
-			if (elems[i] === elem) {
+			if (elems[i] === el) {
 				return i + 1;
 			}
 		}
@@ -104,14 +104,11 @@ interface BskyProfile {
 		}
 	});
 
-	let prev_target: EventTarget | null = null;
-
 	document.addEventListener('mouseover', (e) => {
 		const t = e.target;
-		if (t === btn || t === prev_target) {
+		if (t === btn) {
 			return;
 		}
-		prev_target = t;
 		const is_img = t instanceof HTMLImageElement;
 		let candidate: HTMLImageElement | HTMLVideoElement | null = null;
 		let sibling: ChildNode = t as ChildNode;

@@ -143,14 +143,11 @@ namespace X {
 			});
 	});
 
-	let prev_target: EventTarget | null = null;
-
 	document.addEventListener('mouseover', (e) => {
 		const t = e.target;
-		if (t === btn || t === prev_target) {
+		if (t === btn) {
 			return;
 		}
-		prev_target = t;
 		const is_img = t instanceof HTMLImageElement;
 		let candidate: HTMLImageElement | HTMLVideoElement | null = null;
 		let sibling: ChildNode = t as ChildNode;
