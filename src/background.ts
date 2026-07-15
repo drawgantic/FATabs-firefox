@@ -56,7 +56,7 @@ function downloadImages(index: number | undefined = undefined): void {
 				browser.scripting.executeScript({
 					target: { tabId: id }, func: () => {
 						const a = document.getElementsByClassName('download')[0].firstChild;
-						return (a && a instanceof HTMLAnchorElement) ? a.href : undefined;
+						return (a instanceof HTMLAnchorElement) ? a.href : undefined;
 					}
 				}).then((img) => {
 					if (img.length > 0 && img[0].result) {

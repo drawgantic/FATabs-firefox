@@ -122,15 +122,14 @@ interface BskyProfile {
 					const sib = par && (
 						par instanceof HTMLButtonElement ? par.previousSibling : par
 					) || t.previousSibling;
-					const vid = sib && sib.firstChild;
-					if (vid && vid instanceof HTMLVideoElement) {
-						candidate = vid;
+					if (sib && sib.firstChild instanceof HTMLVideoElement) {
+						candidate = sib.firstChild;
 						sibling = sib;
 						break check;
 					}
 				} {
 					const vid = t.nextSibling && t.nextSibling.nextSibling;
-					if (vid && vid instanceof HTMLVideoElement) {
+					if (vid instanceof HTMLVideoElement) {
 						candidate = vid;
 					}
 				}
