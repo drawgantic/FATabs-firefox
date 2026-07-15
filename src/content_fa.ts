@@ -1,5 +1,4 @@
 (() => {
-	let img: HTMLImageElement;
 	let a: HTMLAnchorElement;
 	let fav: number;
 
@@ -41,18 +40,18 @@
 		if (t === btn) {
 			return;
 		}
-		if (t instanceof HTMLImageElement
-			&& (t.offsetWidth >= 150 || t.offsetHeight >= 150)) {
+		if (
+			t instanceof HTMLImageElement
+			&& t.parentElement instanceof HTMLAnchorElement
+			&& t.parentElement.closest("section.gallery")
+		) {
 			btn.className = '';
-			if (img !== t) {
-				const anc = t.closest('a');
-				if (anc) {
-					(a = anc).prepend(btn);
-					img = t;
-					fav = parseInt(a.dataset.fav ?? '-1');
-					btn.title = (fav == -1 ? 'Download' :
-						(fav == 0 ? 'Fav' : 'UnFav')) + ' Image';
-				}
+			if (a !== t.parentElement) {
+				a = t.parentElement;
+				a.prepend(btn);
+				fav = parseInt(a.dataset.fav ?? '-1');
+				btn.title = (fav == -1 ? 'Download' :
+					(fav == 0 ? 'Fav' : 'UnFav')) + ' Image';
 			}
 		} else {
 			btn.className = 'hide';

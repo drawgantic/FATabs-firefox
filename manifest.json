@@ -33,7 +33,6 @@
 	"content_scripts": [
 		{
 			"matches": ["*://*.furaffinity.net/*"],
-			"exclude_matches": ["*://*.furaffinity.net/view/*"],
 			"js": ["js/content_fa.js"],
 			"css": ["content.css"]
 		},
