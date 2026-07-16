@@ -21,8 +21,8 @@
 						var name = m[1].substring(m[1].lastIndexOf('/') + 1);
 						const tag = name.indexOf('.');
 						const ext = name.lastIndexOf('.');
-						name = name.substring(tag + 1, ext) + '.'
-							+ name.substring(0, tag) + name.substring(ext);
+						const view = a.href.slice(a.href.slice(0, -1).lastIndexOf('/') + 1, -1);
+						name = name.substring(tag + 1, ext) + '.' + view + name.substring(ext);
 						void browser.runtime.sendMessage(
 							{ type: 'btn', src: `https://${m[1]}`, filename: name });
 					}
