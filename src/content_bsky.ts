@@ -98,7 +98,7 @@ interface BskyProfile {
 		if (sources.length > 0) {
 			const src = sources[0].src;
 			const filename = (info ?
-				`${info[1]}_${info[2]}` : src.substring(src.lastIndexOf('/') + 1)
+				`${info[1]}_${info[2]}` : src.slice(src.lastIndexOf('/') + 1)
 			) + `.${idx}.0`;
 			void browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename });
 		}

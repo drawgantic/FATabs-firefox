@@ -18,11 +18,11 @@
 				if (prev < 0) { // download
 					const m = text.match(/(d\.furaffinity\.net\/art\/.*?)"/);
 					if (m) {
-						var name = m[1].substring(m[1].lastIndexOf('/') + 1);
+						var name = m[1].slice(m[1].lastIndexOf('/') + 1);
 						const tag = name.indexOf('.');
 						const ext = name.lastIndexOf('.');
 						const view = a.href.slice(a.href.slice(0, -1).lastIndexOf('/') + 1, -1);
-						name = name.substring(tag + 1, ext) + '.' + view + name.substring(ext);
+						name = name.slice(tag + 1, ext) + '.' + view + name.slice(ext);
 						void browser.runtime.sendMessage(
 							{ type: 'btn', src: `https://${m[1]}`, filename: name });
 					}

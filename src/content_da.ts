@@ -25,8 +25,8 @@
 						u = url.indexOf('?');
 					}
 					const filename =
-						url.substring(url.lastIndexOf('/', u) + 1, url.lastIndexOf('-', u)) +
-						src.substring(src.lastIndexOf('.', s), s);
+						url.slice(url.lastIndexOf('/', u) + 1, url.lastIndexOf('-', u)) +
+						src.slice(src.lastIndexOf('.', s), s);
 					void browser.runtime.sendMessage(
 						{ type: 'btn', src: src, filename: filename });
 				}

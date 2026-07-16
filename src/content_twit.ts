@@ -36,7 +36,7 @@ namespace X {
 
 (() => {
 	function getHash(src: string): string {
-		return src.substring(src.lastIndexOf('/') + 1, src.lastIndexOf('.'));
+		return src.slice(src.lastIndexOf('/') + 1, src.lastIndexOf('.'));
 	}
 
 	let img: HTMLImageElement | HTMLVideoElement;
@@ -77,12 +77,12 @@ namespace X {
 		const m = input.match(reg);
 		if (img instanceof HTMLImageElement) {
 			const q = img.src.indexOf('?');
-			const s = img.src.substring(0, q);
-			const ext = img.src.substring(q + 8, img.src.indexOf('&', q + 8));
+			const s = img.src.slice(0, q);
+			const ext = img.src.slice(q + 8, img.src.indexOf('&', q + 8));
 			const src = s + '?format=' + ext + '&name=orig';
-			const idx = parseInt(input.substring(input.lastIndexOf('/') + 1));
+			const idx = parseInt(input.slice(input.lastIndexOf('/') + 1));
 			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.${idx.toString()}`
-				: s.substring(s.lastIndexOf('/') + 1)) + '.' + ext;
+				: s.slice(s.lastIndexOf('/') + 1)) + '.' + ext;
 			void browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename });
 			return;
 		}
