@@ -20,67 +20,65 @@ function downloadImages(index: number | undefined = undefined): void {
 	running = true;
 	cancelled = false;
 
-	browser.tabs.query({ url: "*://*.furaffinity.net/view/*" })
-		.then(async (tabs) => {
-			let first = 0, last = tabs.length - 1;
-			if (index !== undefined) {
-				if (index < 0) {
-					index = -index;
-					for (const tab of tabs) {
-						if (tab.index >= index) {
-							last = tabs.indexOf(tab) - 1;
-							break;
-						}
+	browser.tabs.query({ url: "*://*.furaffinity.net/view/*" }).then(async (tabs) => {
+		let first = 0, last = tabs.length - 1;
+		if (index !== undefined) {
+			if (index < 0) {
+				index = -index;
+				for (const tab of tabs) {
+					if (tab.index >= index) {
+						last = tabs.indexOf(tab) - 1;
+						break;
 					}
-				} else {
-					for (const tab of tabs) {
-						if (tab.index > index) {
-							first = tabs.indexOf(tab);
-							break;
-						}
+				}
+			} else {
+				for (const tab of tabs) {
+					if (tab.index > index) {
+						first = tabs.indexOf(tab);
+						break;
 					}
 				}
 			}
+		}
 
-			for (let i = first; i <= last; i++) {
-				await new Promise((r) => setTimeout(r, 1125));
-				if (cancelled) {
-					break;
-				}
-
-				const tab = tabs[i];
-				if (tab.id === undefined) {
-					continue;
-				}
-				const id: number = tab.id;
-				browser.scripting.executeScript({
-					target: { tabId: id }, func: () => {
-						const a = document.getElementsByClassName('download')[0].firstChild;
-						return (a instanceof HTMLAnchorElement) ? a.href : undefined;
-					}
-				}).then((img) => {
-					if (img.length > 0 && img[0].result) {
-						void browser.downloads.download({ url: img[0].result, saveAs: false });
-						if (i === last) {
-							browser.tabs.query({ windowType: 'normal' })
-								.then((all) => {
-									if (all.length > 1) {
-										void browser.tabs.remove(id);
-									}
-								}, (err: unknown) => {
-									console.error(`Count Error: ${err as string}`);
-								});
-						} else {
-							void browser.tabs.remove(id);
-						}
-					}
-				}, (err: unknown) => {
-					console.error(`Script Error: ${err as string}`);
-				});
+		for (let i = first; i <= last; i++) {
+			await new Promise((r) => setTimeout(r, 1125));
+			if (cancelled) {
+				break;
 			}
-		}, (err: unknown) => {
-			console.error(`Walk Error: ${err as string}`);
-		});
+
+			const tab = tabs[i];
+			if (tab.id === undefined) {
+				continue;
+			}
+			const id: number = tab.id;
+			browser.scripting.executeScript({
+				target: { tabId: id }, func: () => {
+					const a = document.getElementsByClassName('download')[0].firstChild;
+					return (a instanceof HTMLAnchorElement) ? a.href : undefined;
+				}
+			}).then((img) => {
+				if (img.length > 0 && img[0].result) {
+					void browser.downloads.download({ url: img[0].result, saveAs: false });
+					if (i === last) {
+						browser.tabs.query({ windowType: 'normal' }).then((all) => {
+							if (all.length > 1) {
+								void browser.tabs.remove(id);
+							}
+						}, (err: unknown) => {
+							console.error(`Count Error: ${err as string}`);
+						});
+					} else {
+						void browser.tabs.remove(id);
+					}
+				}
+			}, (err: unknown) => {
+				console.error(`Script Error: ${err as string}`);
+			});
+		}
+	}, (err: unknown) => {
+		console.error(`Walk Error: ${err as string}`);
+	});
 	running = false;
 }
 
@@ -93,18 +91,16 @@ browser.runtime.onMessage.addListener((request: RequestBase) => {
 			break;
 		}
 		case 'left':
-			void browser.tabs.query({ active: true, currentWindow: true })
-				.then((tab) => {
-					if (tab[0].index > 0) {
-						downloadImages(-tab[0].index);
-					}
-				});
+			void browser.tabs.query({ active: true, currentWindow: true }).then((tab) => {
+				if (tab[0].index > 0) {
+					downloadImages(-tab[0].index);
+				}
+			});
 			break;
 		case 'right':
-			void browser.tabs.query({ active: true, currentWindow: true })
-				.then((tab) => {
-					downloadImages(tab[0].index);
-				});
+			void browser.tabs.query({ active: true, currentWindow: true }).then((tab) => {
+				downloadImages(tab[0].index);
+			});
 			break;
 		case 'cancel':
 			cancelDownload();

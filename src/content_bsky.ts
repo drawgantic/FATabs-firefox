@@ -57,12 +57,11 @@ interface BskyProfile {
 			.then((json) => (json as BskyProfile).handle.split('.')[0]);
 		const getBlob = 'https://bsky.social/xrpc/com.atproto.sync.getBlob'
 			+ `?did=${did}&cid=${cid}`;
-		void fetch(getBlob, { headers: headers })
-			.then((response) => {
-				const filename = `${handle}_${info ? info[2] : cid}.${idx}.0`;
-				void browser.runtime.sendMessage(
-					{ type: 'btn', src: response.url, filename: filename });
-			});
+		void fetch(getBlob, { headers: headers }).then((response) => {
+			const filename = `${handle}_${info ? info[2] : cid}.${idx}.0`;
+			void browser.runtime.sendMessage(
+				{ type: 'btn', src: response.url, filename: filename });
+		});
 	}
 
 	let img: HTMLImageElement | HTMLVideoElement;

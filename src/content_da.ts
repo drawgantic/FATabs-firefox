@@ -11,26 +11,24 @@
 		e.preventDefault();
 		const url = img.src;
 		a.dataset.fav = '0';
-		void fetch(a.href)
-			.then((response) => response.text())
-			.then((text) => {
-				const m = text.match(/(?:<div><img|<video).*?src="(.*?)"/);
-				if (m) {
-					const src = m[1];
-					let s: number | undefined = src.indexOf('?');
-					let u: number | undefined;
-					if (s == -1) {
-						s = undefined; u = undefined;
-					} else {
-						u = url.indexOf('?');
-					}
-					const filename =
-						url.slice(url.lastIndexOf('/', u) + 1, url.lastIndexOf('-', u)) +
-						src.slice(src.lastIndexOf('.', s), s);
-					void browser.runtime.sendMessage(
-						{ type: 'btn', src: src, filename: filename });
+		void fetch(a.href).then((response) => response.text()).then((text) => {
+			const m = text.match(/(?:<div><img|<video).*?src="(.*?)"/);
+			if (m) {
+				const src = m[1];
+				let s: number | undefined = src.indexOf('?');
+				let u: number | undefined;
+				if (s == -1) {
+					s = undefined; u = undefined;
+				} else {
+					u = url.indexOf('?');
 				}
-			});
+				const filename =
+					url.slice(url.lastIndexOf('/', u) + 1, url.lastIndexOf('-', u)) +
+					src.slice(src.lastIndexOf('.', s), s);
+				void browser.runtime.sendMessage(
+					{ type: 'btn', src: src, filename: filename });
+			}
+		});
 	});
 
 	document.addEventListener('mouseover', (e) => {
