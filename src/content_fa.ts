@@ -8,7 +8,9 @@
 		const name = url.slice(url.lastIndexOf('/') + 1);
 		const tag = name.indexOf('.');
 		const ext = name.lastIndexOf('.');
-		const filename = name.slice(tag + 1, ext) + '.' + view + name.slice(ext);
+		const start = tag + 1;
+		const body = name.slice(start + (name[start] == '~' ? 1 : 0), ext);
+		const filename = body + '.' + view + name.slice(ext);
 		void browser.runtime.sendMessage(
 			{ type: 'btn', src: url, filename: filename });
 	}
