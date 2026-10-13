@@ -12,9 +12,12 @@
 		const url = img.src;
 		a.dataset.fav = '0';
 		void fetch(a.href).then((response) => response.text()).then((text) => {
-			const m = text.match(/(?:<div><img|<video).*?src="(.*?)"/);
+			const parser = new DOMParser();
+			const doc = parser.parseFromString(text, 'text/html');
+			const m: HTMLImageElement | null
+				= doc.querySelector("div[typeof='ImageObject'] img");
 			if (m) {
-				const src = m[1];
+				const src = m.src;
 				let s: number | undefined = src.indexOf('?');
 				let u: number | undefined;
 				if (s == -1) {
@@ -22,9 +25,14 @@
 				} else {
 					u = url.indexOf('?');
 				}
-				const filename =
+				const name =
 					url.slice(url.lastIndexOf('/', u) + 1, url.lastIndexOf('-', u)) +
 					src.slice(src.lastIndexOf('.', s), s);
+
+				const sep = name.lastIndexOf('_');
+				const by = name.lastIndexOf('_', sep - 1);
+				const filename = name.slice(by + 1, sep) + '_' + name.slice(0, by - 3)
+					+ '.' + name.slice(sep + 1);
 				void browser.runtime.sendMessage(
 					{ type: 'btn', src: src, filename: filename });
 			}
