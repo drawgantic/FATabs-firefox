@@ -1,6 +1,13 @@
 (() => {
+	type NumOr = number | undefined;
+	function findLast(str: string, search: string, pos?: NumOr): NumOr {
+		const idx = str.lastIndexOf(search, pos);
+		return idx >= 0 ? idx : undefined;
+	}
+
 	let img: HTMLImageElement;
-	let a: HTMLAnchorElement;
+	let a: HTMLElement;
+	const trim = /^_+|_+$/g;
 
 	const btn = document.createElement('img');
 	btn.id = 'fatabs';
@@ -9,34 +16,49 @@
 	btn.addEventListener('click', (e) => {
 		e.stopPropagation();
 		e.preventDefault();
-		const url = img.src;
+		const src = img.src;
 		a.dataset.fav = '0';
-		void fetch(a.href).then((response) => response.text()).then((text) => {
-			const parser = new DOMParser();
-			const doc = parser.parseFromString(text, 'text/html');
-			const m: HTMLImageElement | null
-				= doc.querySelector("div[typeof='ImageObject'] img");
-			if (m) {
-				const src = m.src;
-				let s: number | undefined = src.indexOf('?');
-				let u: number | undefined;
-				if (s == -1) {
-					s = undefined; u = undefined;
-				} else {
-					u = url.indexOf('?');
-				}
-				const name =
-					url.slice(url.lastIndexOf('/', u) + 1, url.lastIndexOf('-', u)) +
-					src.slice(src.lastIndexOf('.', s), s);
+		if (a instanceof HTMLAnchorElement) {
+			void fetch(a.href).then((response) => response.text()).then((text) => {
+				const parser = new DOMParser();
+				const doc = parser.parseFromString(text, 'text/html');
+				const m: HTMLImageElement | null
+					= doc.querySelector("div[typeof='ImageObject'] img");
+				if (m) {
+					const end = findLast(src, '-', findLast(src, '?'));
+					const name = src.slice(src.lastIndexOf('/', end) + 1, end);
 
-				const sep = name.lastIndexOf('_');
-				const by = name.lastIndexOf('_', sep - 1);
-				const filename = name.slice(by + 1, sep) + '_' + name.slice(0, by - 3)
-					+ '.' + name.slice(sep + 1);
+					const tag = name.lastIndexOf('_');
+					const by = name.lastIndexOf('_by_', tag - 1);
+					const artist = name.slice(by + 4, tag).replaceAll('_', '-');
+					const title = name.slice(0, by).replace(trim, '');
+					const filename = `${artist}_${title}.${name.slice(tag + 1)}.jpg`;
+					void browser.runtime.sendMessage(
+						{ type: 'btn', src: m.src, filename: filename });
+				}
+			});
+		} else { // view page
+			const artist = window.location.pathname.split('/')[1];
+			const by_artist = "_by_" + artist.replaceAll('-', '_');
+			let by: number;
+			let str: string;
+			if ((by = src.indexOf(by_artist)) >= 0) {
+				str = src;
+			} else if ((by = img.srcset.indexOf(by_artist)) >= 0) {
+				str = img.srcset;
+			} else {
+				const end = findLast(src, '-', findLast(src, '?'));
+				const title = src.slice(src.lastIndexOf('/', end) + 1, end);
 				void browser.runtime.sendMessage(
-					{ type: 'btn', src: src, filename: filename });
+					{ type: 'btn', src: img.src, filename: `${artist}_${title}` });
+				return;
 			}
-		});
+			const title = str.slice(str.lastIndexOf('/', by) + 1, by).replace(trim, '');
+			by += by_artist.length;
+			const tag = str.slice(by + 1, str.indexOf('-', by));
+			void browser.runtime.sendMessage(
+				{ type: 'btn', src: img.src, filename: `${artist}_${title}.${tag}.jpg` });
+		}
 	});
 
 	document.addEventListener('mouseover', (e) => {
@@ -44,30 +66,19 @@
 		if (t === btn) {
 			return;
 		}
-		if (t instanceof HTMLAnchorElement) {
-			const next = t.nextElementSibling;
-			const prev = t.previousElementSibling;
-			const neph = (next && next.firstChild instanceof HTMLImageElement ?
-				next.firstChild : (prev && prev.firstChild instanceof HTMLImageElement ?
-					prev.firstChild : null));
-			if (neph && (neph.offsetWidth >= 190 || neph.offsetHeight >= 190)) {
-				btn.className = '';
-				if (img !== neph) {
-					(a = t).prepend(btn);
-					img = neph;
-				}
-			} else {
-				btn.className = 'hide';
-			}
-		} else if (t instanceof HTMLImageElement
-			&& (t.offsetWidth >= 190 || t.offsetHeight >= 190)) {
+		let div, elem;
+		if (
+			t instanceof HTMLImageElement
+			&& (div = t.parentElement) instanceof HTMLDivElement
+			&& (elem = div.parentElement) !== null
+			&& (div.getAttribute("typeof") === "ImageObject"
+				|| elem.tagName.toLowerCase() === "figure")
+		) {
 			btn.className = '';
 			if (img !== t) {
-				const anc = t.closest('a');
-				if (anc) {
-					(a = anc).prepend(btn);
-					img = t;
-				}
+				img = t;
+				a = elem;
+				a.prepend(btn);
 			}
 		} else {
 			btn.className = 'hide';
