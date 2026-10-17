@@ -24,18 +24,19 @@
 				const doc = parser.parseFromString(text, 'text/html');
 				const m: HTMLImageElement | null
 					= doc.querySelector("div[typeof='ImageObject'] img");
-				if (m) {
-					const end = findLast(src, '-', findLast(src, '?'));
-					const name = src.slice(src.lastIndexOf('/', end) + 1, end);
-
-					const tag = name.lastIndexOf('_');
-					const by = name.lastIndexOf('_by_', tag - 1);
-					const artist = name.slice(by + 4, tag).replaceAll('_', '-');
-					const title = name.slice(0, by).replace(trim, '');
-					const filename = `${artist}_${title}.${name.slice(tag + 1)}.jpg`;
-					void browser.runtime.sendMessage(
-						{ type: 'btn', src: m.src, filename: filename });
+				if (!m) {
+					return;
 				}
+				const end = findLast(src, '-', findLast(src, '?'));
+				const name = src.slice(src.lastIndexOf('/', end) + 1, end);
+
+				const tag = name.lastIndexOf('_');
+				const by = name.lastIndexOf('_by_', tag - 1);
+				const artist = name.slice(by + 4, tag).replaceAll('_', '-');
+				const title = name.slice(0, by).replace(trim, '');
+				const filename = `${artist}_${title}.${name.slice(tag + 1)}.jpg`;
+				void browser.runtime.sendMessage(
+					{ type: 'btn', src: m.src, filename: filename });
 			});
 		} else { // view page
 			const artist = window.location.pathname.split('/')[1];
