@@ -10,7 +10,7 @@
 		const ext = name.lastIndexOf('.');
 		const start = tag + 1;
 		const body = name.slice(start + (name[start] == '~' ? 1 : 0), ext);
-		const filename = body + '.' + view + name.slice(ext);
+		const filename = decodeURIComponent(body) + '.' + view + name.slice(ext);
 		void browser.runtime.sendMessage(
 			{ type: 'btn', src: url, filename: filename });
 	}

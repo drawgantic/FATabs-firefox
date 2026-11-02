@@ -5,32 +5,20 @@ namespace X {
 		url: string;
 	}
 
-	export interface VideoInfo {
-		variants: Video[];
-	}
-
 	export interface Media {
-		video_info: VideoInfo;
+		video_info: { variants: Video[]; };
 		expanded_url: string;
 		media_url: string;
 		id_str: string;
 	}
 
-	export interface Extended {
-		media: Media[] | null;
-	}
-
 	export interface Tweet {
-		extended_entities: Extended | null;
+		extended_entities: { media: Media[] | null; } | null;
 		quoted_status_id_str: string | null;
 	}
 
-	export interface GlobalObj {
-		tweets: Record<string, Tweet>;
-	}
-
 	export interface Json {
-		globalObjects: GlobalObj;
+		data: { tweetResult: { result: { legacy: Tweet; }; }; };
 	}
 }
 
@@ -41,6 +29,55 @@ namespace X {
 
 	let img: HTMLImageElement | HTMLVideoElement;
 	const reg = /.*:\/\/(?:x|twitter)\.com\/([a-zA-Z0-9_]+)\/status\/(\d+)/;
+
+	const API_FEATURES = {
+		articles_preview_enabled: false,
+		c9s_tweet_anatomy_moderator_badge_enabled: false,
+		communities_web_enable_tweet_community_results_fetch: false,
+		creator_subscriptions_quote_tweet_preview_enabled: false,
+		creator_subscriptions_tweet_preview_api_enabled: false,
+		freedom_of_speech_not_reach_fetch_enabled: false,
+		graphql_is_translatable_rweb_tweet_is_translatable_enabled: false,
+		longform_notetweets_consumption_enabled: false,
+		longform_notetweets_inline_media_enabled: false,
+		longform_notetweets_rich_text_read_enabled: false,
+		premium_content_api_read_enabled: false,
+		profile_label_improvements_pcf_label_in_post_enabled: false,
+		responsive_web_edit_tweet_api_enabled: false,
+		responsive_web_enhance_cards_enabled: false,
+		responsive_web_graphql_exclude_directive_enabled: false,
+		responsive_web_graphql_skip_user_profile_image_extensions_enabled: false,
+		responsive_web_graphql_timeline_navigation_enabled: false,
+		responsive_web_grok_analysis_button_from_backend: false,
+		responsive_web_grok_analyze_button_fetch_trends_enabled: false,
+		responsive_web_grok_analyze_post_followups_enabled: false,
+		responsive_web_grok_image_annotation_enabled: false,
+		responsive_web_grok_share_attachment_enabled: false,
+		responsive_web_grok_show_grok_translated_post: false,
+		responsive_web_jetfuel_frame: false,
+		responsive_web_media_download_video_enabled: false,
+		responsive_web_twitter_article_tweet_consumption_enabled: false,
+		rweb_tipjar_consumption_enabled: false,
+		rweb_video_screen_enabled: false,
+		standardized_nudges_misinfo: false,
+		tweet_awards_web_tipping_enabled: false,
+		tweet_with_visibility_results_prefer_gql_limited_actions_policy_enabled: false,
+		tweetypie_unmention_optimization_enabled: false,
+		verified_phone_label_enabled: false,
+		view_counts_everywhere_api_enabled: false,
+	};
+	const API_FEATURES_ENCODED = encodeURIComponent(JSON.stringify(API_FEATURES));
+
+	const API_VARS = {
+		tweetId: "",
+		with_rux_injections: false,
+		includePromotedContent: false,
+		withCommunity: false,
+		withQuickPromoteEligibilityTweetFields: false,
+		withBirdwatchNotes: false,
+		withVoice: false,
+		withV2Timeline: false,
+	};
 
 	const cookies: Record<string, string> = {};
 	document.cookie.split(';').filter(n => n.indexOf('=') > 0).forEach((n) => {
@@ -91,17 +128,22 @@ namespace X {
 			return;
 		}
 		const vid = img;
-		const url = 'https://x.com/i/api/2/timeline/conversation/'
-			+ m[2] + '.json?tweet_mode=extended&include_entities=false'
-			+ '&include_user_entities=false';
+		const vars = { ...API_VARS, tweetId: m[2] };
+		const url = `https://x.com/i/api/graphql/2ICDjqPd81tulZcYrtpTuQ/TweetResultByRestId`
+			+ `?variables=${encodeURIComponent(JSON.stringify(vars))}`
+			+ `&features=${API_FEATURES_ENCODED}`;
+
 		void fetch(url, { headers: headers }).then((res) => res.json()).then((json) => {
+			console.log(json);
 			const j = json as X.Json;
-			let tweet = j.globalObjects.tweets[m[2]];
+			let tweet = j.data.tweetResult.result.legacy;
 			let media = tweet.extended_entities?.media;
 			let med: X.Media;
 			if (!media && tweet.quoted_status_id_str) {
-				tweet = j.globalObjects.tweets[tweet.quoted_status_id_str];
-				media = tweet.extended_entities?.media;
+				// tweet = j.globalObjects.tweets[tweet.quoted_status_id_str];
+				// media = tweet.extended_entities?.media;
+				console.log(tweet.quoted_status_id_str);
+				return;
 			}
 			let idx = 1;
 			if (!media) {

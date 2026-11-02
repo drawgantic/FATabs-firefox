@@ -33,7 +33,7 @@
 				const tag = name.lastIndexOf('_');
 				const by = name.lastIndexOf('_by_', tag - 1);
 				const artist = name.slice(by + 4, tag).replaceAll('_', '-');
-				const title = name.slice(0, by).replace(trim, '');
+				const title = decodeURIComponent(name.slice(0, by).replace(trim, ''));
 				const filename = `${artist}_${title}.${name.slice(tag + 1)}.jpg`;
 				void browser.runtime.sendMessage(
 					{ type: 'btn', src: m.src, filename: filename });
@@ -49,12 +49,14 @@
 				str = img.srcset;
 			} else {
 				const end = findLast(src, '-', findLast(src, '?'));
-				const title = src.slice(src.lastIndexOf('/', end) + 1, end);
+				const title = decodeURIComponent(
+					src.slice(src.lastIndexOf('/', end) + 1, end).replace(trim, ''));
 				void browser.runtime.sendMessage(
 					{ type: 'btn', src: img.src, filename: `${artist}_${title}` });
 				return;
 			}
-			const title = str.slice(str.lastIndexOf('/', by) + 1, by).replace(trim, '');
+			const title = decodeURIComponent(
+				str.slice(str.lastIndexOf('/', by) + 1, by).replace(trim, ''));
 			by += by_artist.length;
 			const tag = str.slice(by + 1, str.indexOf('-', by));
 			void browser.runtime.sendMessage(
