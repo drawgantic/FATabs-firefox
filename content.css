@@ -1,6 +1,5 @@
-@keyframes fadein {
-	0%   {opacity: 0;}
-	100% {opacity: 0.5;}
+@keyframes fadeOut {
+	to {opacity: 0;}
 }
 
 #fatabs {
@@ -11,8 +10,8 @@
 	position: absolute;
 	cursor: pointer;
 
-	animation: fadein 0.1s;
-	transition: 0.1s;
+	animation: fadeOut 0.2s ease-in 2s;
+	animation-fill-mode: forwards;
 
 	filter: hue-rotate(240deg);
 	background-color: black;
@@ -20,10 +19,12 @@
 }
 
 #fatabs.hide {
+	animation: none;
 	opacity: 0;
 }
 
 #fatabs:hover {
+	animation: normal;
 	opacity: 1;
 }
 
