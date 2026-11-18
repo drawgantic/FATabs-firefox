@@ -117,8 +117,9 @@ namespace X {
 			const s = img.src.slice(0, q);
 			const ext = img.src.slice(q + 8, img.src.indexOf('&', q + 8));
 			const src = s + '?format=' + ext + '&name=orig';
-			const idx = parseInt(input.slice(input.lastIndexOf('/') + 1));
-			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.${idx.toString()}`
+			const idx = parseInt(
+				input.slice(input.lastIndexOf('/') + 1)).toString().padStart(2, '0');
+			const filename = (m ? `${m[1].replace(/_/g, '-')}_${m[2]}.${idx}`
 				: s.slice(s.lastIndexOf('/') + 1)) + '.' + ext;
 			void browser.runtime.sendMessage({ type: 'btn', src: src, filename: filename });
 			return;
@@ -177,7 +178,7 @@ namespace X {
 				.filter((n: X.Video) => n.content_type == 'video/mp4')
 				.sort((a: X.Video, b: X.Video) => b.bitrate - a.bitrate)[0].url;
 			const filename = `${user_id.replace(/_/g, '-')}_`
-				+ `${status_id}.${idx.toString()}.mp4`;
+				+ `${status_id}.${idx.toString().padStart(2, '0')}.mp4`;
 			void browser.runtime.sendMessage(
 				{ type: 'btn', src: src, filename: filename });
 		});
